@@ -2,6 +2,14 @@
 
 O projeto utiliza uma arquitetura em camadas simples para manter responsabilidades visíveis aos estudantes.
 
+As páginas estáticas são clientes da API e não acessam persistência diretamente:
+
+```text
+Navegador -> HTML/CSS/JavaScript -> fetch -> Controller -> DTO -> Service
+```
+
+`index.html` apresenta o projeto. `crud.html` contém, em um único arquivo e sem framework de frontend, a interface e as chamadas HTTP para o CRUD.
+
 ## Fluxo de entrada
 
 ```text
@@ -51,5 +59,6 @@ O MongoDB devolve um `Model` de persistência. O `Service` seleciona o resultado
 - **Model:** estrutura persistida no MongoDB.
 - **Exception:** falhas de domínio e representação consistente de erros HTTP.
 - **Configuration:** integração com infraestrutura e recursos exclusivos de ambientes específicos.
+- **Páginas estáticas:** apresentação e cliente web da API, limitados aos contratos HTTP públicos.
 
 Nenhum `Model` anotado com `@Document` deve atravessar diretamente a fronteira HTTP.

@@ -81,11 +81,13 @@ docker compose down
 Verificar a aplicação depois de iniciada:
 
 ```bash
+curl -i http://localhost:8080/
+curl -i http://localhost:8080/crud.html
 curl -i http://localhost:8080/api/linguagens
 curl -i http://localhost:8080/v3/api-docs
 ```
 
-A documentação visual fica disponível em `http://localhost:8080/docs`.
+A página inicial fica em `http://localhost:8080/`, o cliente CRUD em `http://localhost:8080/crud.html` e a documentação visual em `http://localhost:8080/docs`.
 
 ## Testes de integração
 

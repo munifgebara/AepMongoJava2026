@@ -1,8 +1,11 @@
 package br.com.munif.cesumar.documentation;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,13 +25,41 @@ import br.com.munif.cesumar.service.LinguagemService;
         + "org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration,"
         + "org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration")
 @AutoConfigureMockMvc
-class OpenApiDocumentationTest {
+class ProjectWebPagesTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
     private LinguagemService service;
+
+    @Test
+    void deveDisponibilizarPaginaInicialComOsDoisAcessos() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(forwardedUrl("index.html"));
+
+        mockMvc.perform(get("/index.html"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(content().string(allOf(
+                        containsString("AEP Mongo Java 2026"),
+                        containsString("href=\"/docs\""),
+                        containsString("href=\"/crud.html\""))));
+    }
+
+    @Test
+    void deveDisponibilizarCrudEmArquivoUnicoComJavaScriptNativo() throws Exception {
+        mockMvc.perform(get("/crud.html"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(content().string(allOf(
+                        containsString("id=\"form-linguagem\""),
+                        containsString("const API_URL = \"/api/linguagens\""),
+                        containsString("fetch("),
+                        containsString("id ? \"PUT\" : \"POST\""),
+                        containsString("method: \"DELETE\""))));
+    }
 
     @Test
     void deveDisponibilizarDocumentacaoVisualEmDocs() throws Exception {

@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Cliente web para o CRUD de linguagens de programação">
+    <title>CRUD de Linguagens</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --background: #f5f2e9;
+            --surface: #fffdf8;
+            --surface-soft: #ece8dc;
+            --text: #19342e;
+            --muted: #657771;
+            --primary: #176b56;
+            --primary-dark: #0d4e3d;
+            --danger: #b8463d;
+            --warning: #d89b2b;
+            --border: #ddd9ce;
+            --shadow: 0 18px 54px rgba(29, 55, 48, 0.11);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                    linear-gradient(rgba(23, 107, 86, 0.035) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(23, 107, 86, 0.035) 1px, transparent 1px),
+                    var(--background);
+            background-size: 32px 32px;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid rgba(221, 217, 206, 0.88);
+            background: rgba(245, 242, 233, 0.88);
+            backdrop-filter: blur(16px);
+        }
+
+        .topbar-content {
+            width: min(1240px, calc(100% - 36px));
+            min-height: 72px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: inherit;
+            font-weight: 800;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            color: white;
+            border-radius: 12px;
+            background: var(--primary);
+        }
+
+        .topbar nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            padding: 9px 13px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+
+        .nav-link:hover,
+        .nav-link:focus-visible {
+            color: var(--primary);
+            background: rgba(23, 107, 86, 0.08);
+            outline: none;
+        }
+
+        .layout {
+            width: min(1240px, calc(100% - 36px));
+            margin: 0 auto;
+            padding: 48px 0 64px;
+            display: grid;
+            grid-template-columns: minmax(300px, 0.76fr) minmax(0, 1.5fr);
+            align-items: start;
+            gap: 28px;
+        }
+
+        .panel {
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .form-panel {
+            position: sticky;
+            top: 100px;
+            padding: 28px;
+        }
+
+        .eyebrow {
+            margin: 0 0 9px;
+            color: var(--primary);
+            font-size: 0.73rem;
+            font-weight: 850;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(2rem, 4vw, 2.7rem);
+            font-weight: 500;
+            line-height: 1;
+            letter-spacing: -0.04em;
+        }
+
+        .intro,
+        .supporting {
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        form {
+            margin-top: 28px;
+        }
+
+        .field {
+            margin-bottom: 17px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 0.86rem;
+            font-weight: 750;
+        }
+
+        input {
+            width: 100%;
+            height: 46px;
+            padding: 0 13px;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: white;
+            transition: border-color 150ms ease, box-shadow 150ms ease;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(23, 107, 86, 0.12);
+            outline: none;
+        }
+
+        input[aria-invalid="true"] {
+            border-color: var(--danger);
+        }
+
+        .field-error {
+            min-height: 17px;
+            margin: 5px 0 0;
+            color: var(--danger);
+            font-size: 0.76rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .button {
+            min-height: 42px;
+            padding: 0 17px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            cursor: pointer;
+            border: 0;
+            border-radius: 11px;
+            font-weight: 800;
+            transition: transform 120ms ease, opacity 120ms ease, background 120ms ease;
+        }
+
+        .button:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .button:focus-visible {
+            outline: 3px solid rgba(23, 107, 86, 0.25);
+            outline-offset: 2px;
+        }
+
+        .button:disabled {
+            cursor: wait;
+            opacity: 0.58;
+        }
+
+        .button-primary {
+            flex: 1;
+            color: white;
+            background: var(--primary);
+        }
+
+        .button-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+        }
+
+        .button-secondary {
+            color: var(--text);
+            background: var(--surface-soft);
+        }
+
+        .button-small {
+            min-height: 34px;
+            padding: 0 11px;
+            font-size: 0.8rem;
+        }
+
+        .button-danger {
+            color: var(--danger);
+            background: rgba(184, 70, 61, 0.09);
+        }
+
+        .list-panel {
+            min-height: 500px;
+            overflow: hidden;
+        }
+
+        .list-header {
+            padding: 27px 28px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .list-header h2 {
+            margin-bottom: 4px;
+            font-size: 1.25rem;
+            letter-spacing: -0.025em;
+        }
+
+        .list-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.86rem;
+        }
+
+        .counter {
+            min-width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            color: var(--primary);
+            font-weight: 850;
+            border-radius: 50%;
+            background: rgba(23, 107, 86, 0.1);
+        }
+
+        .status {
+            margin: 20px 28px 0;
+            padding: 12px 14px;
+            display: none;
+            border-radius: 11px;
+            font-size: 0.87rem;
+            line-height: 1.45;
+        }
+
+        .status.visible {
+            display: block;
+        }
+
+        .status.success {
+            color: var(--primary-dark);
+            background: rgba(23, 107, 86, 0.1);
+        }
+
+        .status.error {
+            color: #8f3029;
+            background: rgba(184, 70, 61, 0.1);
+        }
+
+        .status.info {
+            color: #78500b;
+            background: rgba(216, 155, 43, 0.14);
+        }
+
+        .language-list {
+            margin: 0;
+            padding: 20px 28px 28px;
+            display: grid;
+            gap: 12px;
+            list-style: none;
+        }
+
+        .language-card {
+            padding: 18px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: white;
+            transition: border-color 150ms ease, transform 150ms ease;
+        }
+
+        .language-card:hover {
+            transform: translateY(-1px);
+            border-color: rgba(23, 107, 86, 0.38);
+        }
+
+        .language-name {
+            margin: 0 0 5px;
+            overflow-wrap: anywhere;
+            font-size: 1rem;
+        }
+
+        .language-id {
+            display: block;
+            overflow: hidden;
+            color: var(--muted);
+            font: 0.75rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 7px;
+        }
+
+        .empty-state {
+            padding: 74px 28px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .empty-state strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.45rem;
+            font-weight: 500;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 850px) {
+            .layout {
+                max-width: 680px;
+                grid-template-columns: 1fr;
+            }
+
+            .form-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .topbar-content,
+            .layout {
+                width: min(100% - 22px, 680px);
+            }
+
+            .nav-link:first-child {
+                display: none;
+            }
+
+            .layout {
+                padding-top: 26px;
+            }
+
+            .form-panel,
+            .list-header {
+                padding: 22px;
+            }
+
+            .status {
+                margin-right: 22px;
+                margin-left: 22px;
+            }
+
+            .language-list {
+                padding: 18px 22px 22px;
+            }
+
+            .language-card {
+                grid-template-columns: 1fr;
+            }
+
+            .card-actions .button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <div class="topbar-content">
+        <a class="brand" href="/">
+            <span class="brand-mark">A</span>
+            <span>CRUD de Linguagens</span>
+        </a>
+        <nav aria-label="Navegação principal">
+            <a class="nav-link" href="/">Início</a>
+            <a class="nav-link" href="/docs">Documentação</a>
+        </nav>
+    </div>
+</header>
+
+<main class="layout">
+    <section class="panel form-panel" aria-labelledby="form-title">
+        <p class="eyebrow" id="form-mode">Novo registro</p>
+        <h1 id="form-title">Cadastrar linguagem</h1>
+        <p class="intro">Preencha os três campos definidos pelo contrato de entrada da API.</p>
+
+        <form id="form-linguagem" novalidate>
+            <input id="linguagem-id" type="hidden">
+
+            <div class="field">
+                <label for="nome">Nome</label>
+                <input id="nome" name="nome" type="text" autocomplete="off" required>
+                <p class="field-error" id="erro-nome"></p>
+            </div>
+
+            <div class="field">
+                <label for="dataCriacao">Data de criação</label>
+                <input id="dataCriacao" name="dataCriacao" type="date" required>
+                <p class="field-error" id="erro-dataCriacao"></p>
+            </div>
+
+            <div class="field">
+                <label for="autor">Autor ou responsável</label>
+                <input id="autor" name="autor" type="text" autocomplete="off" required>
+                <p class="field-error" id="erro-autor"></p>
+            </div>
+
+            <div class="form-actions">
+                <button class="button button-primary" id="salvar" type="submit">Salvar linguagem</button>
+                <button class="button button-secondary" id="cancelar" type="button" hidden>Cancelar</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel list-panel" aria-labelledby="list-title">
+        <header class="list-header">
+            <div>
+                <h2 id="list-title">Linguagens cadastradas</h2>
+                <p>A listagem usa a representação resumida da API.</p>
+            </div>
+            <span class="counter" id="contador" aria-label="Quantidade de linguagens">0</span>
+        </header>
+
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+        <ul class="language-list" id="lista-linguagens" aria-live="polite"></ul>
+        <div class="empty-state" id="estado-vazio" hidden>
+            <strong>Nenhuma linguagem cadastrada.</strong>
+            Use o formulário para criar o primeiro registro.
+        </div>
+    </section>
+</main>
+
+<script>
+    "use strict";
+
+    const API_URL = "/api/linguagens";
+    const formulario = document.querySelector("#form-linguagem");
+    const campoId = document.querySelector("#linguagem-id");
+    const campoNome = document.querySelector("#nome");
+    const campoDataCriacao = document.querySelector("#dataCriacao");
+    const campoAutor = document.querySelector("#autor");
+    const botaoSalvar = document.querySelector("#salvar");
+    const botaoCancelar = document.querySelector("#cancelar");
+    const tituloFormulario = document.querySelector("#form-title");
+    const modoFormulario = document.querySelector("#form-mode");
+    const lista = document.querySelector("#lista-linguagens");
+    const contador = document.querySelector("#contador");
+    const estadoVazio = document.querySelector("#estado-vazio");
+    const status = document.querySelector("#status");
+
+    async function requisitar(caminho = "", opcoes = {}) {
+        const resposta = await fetch(`${API_URL}${caminho}`, {
+            ...opcoes,
+            headers: {"Content-Type": "application/json", ...(opcoes.headers || {})}
+        });
+
+        if (!resposta.ok) {
+            let erro = {};
+            try {
+                erro = await resposta.json();
+            } catch (_) {
+                erro = {message: `A API respondeu com o status ${resposta.status}.`};
+            }
+            throw erro;
+        }
+
+        return resposta.status === 204 ? null : resposta.json();
+    }
+
+    function mostrarStatus(mensagem, tipo = "info") {
+        status.textContent = mensagem;
+        status.className = `status visible ${tipo}`;
+    }
+
+    function ocultarStatus() {
+        status.textContent = "";
+        status.className = "status";
+    }
+
+    function definirOcupado(ocupado) {
+        botaoSalvar.disabled = ocupado;
+        botaoSalvar.textContent = ocupado ? "Aguarde..." : (campoId.value ? "Atualizar linguagem" : "Salvar linguagem");
+    }
+
+    function limparErros() {
+        for (const campo of ["nome", "dataCriacao", "autor"]) {
+            document.querySelector(`#erro-${campo}`).textContent = "";
+            document.querySelector(`#${campo}`).removeAttribute("aria-invalid");
+        }
+    }
+
+    function exibirErrosDeCampo(fieldErrors = {}) {
+        limparErros();
+        for (const [campo, mensagem] of Object.entries(fieldErrors)) {
+            const entrada = document.querySelector(`#${campo}`);
+            const saida = document.querySelector(`#erro-${campo}`);
+            if (entrada && saida) {
+                entrada.setAttribute("aria-invalid", "true");
+                saida.textContent = mensagem;
+            }
+        }
+    }
+
+    function criarBotao(texto, classe, acao) {
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.className = `button button-small ${classe}`;
+        botao.textContent = texto;
+        botao.addEventListener("click", acao);
+        return botao;
+    }
+
+    function renderizarLinguagens(linguagens) {
+        lista.replaceChildren();
+        contador.textContent = String(linguagens.length);
+        contador.setAttribute("aria-label", `${linguagens.length} linguagens`);
+        estadoVazio.hidden = linguagens.length !== 0;
+
+        for (const linguagem of linguagens) {
+            const item = document.createElement("li");
+            item.className = "language-card";
+
+            const dados = document.createElement("div");
+            const nome = document.createElement("h3");
+            const id = document.createElement("code");
+            nome.className = "language-name";
+            nome.textContent = linguagem.nome;
+            id.className = "language-id";
+            id.textContent = `id: ${linguagem.id}`;
+            dados.append(nome, id);
+
+            const acoes = document.createElement("div");
+            acoes.className = "card-actions";
+            acoes.append(
+                    criarBotao("Editar", "button-secondary", () => editarLinguagem(linguagem.id)),
+                    criarBotao("Excluir", "button-danger", () => excluirLinguagem(linguagem))
+            );
+
+            item.append(dados, acoes);
+            lista.append(item);
+        }
+    }
+
+    async function carregarLinguagens() {
+        mostrarStatus("Carregando linguagens...", "info");
+        try {
+            const linguagens = await requisitar();
+            renderizarLinguagens(linguagens);
+            ocultarStatus();
+        } catch (erro) {
+            renderizarLinguagens([]);
+            mostrarStatus(erro.message || "Não foi possível consultar a API.", "error");
+        }
+    }
+
+    async function editarLinguagem(id) {
+        mostrarStatus("Buscando os dados completos...", "info");
+        try {
+            const linguagem = await requisitar(`/${encodeURIComponent(id)}`);
+            campoId.value = linguagem.id;
+            campoNome.value = linguagem.nome;
+            campoDataCriacao.value = linguagem.dataCriacao;
+            campoAutor.value = linguagem.autor;
+            modoFormulario.textContent = "Editando registro";
+            tituloFormulario.textContent = linguagem.nome;
+            botaoSalvar.textContent = "Atualizar linguagem";
+            botaoCancelar.hidden = false;
+            limparErros();
+            ocultarStatus();
+            campoNome.focus();
+            document.querySelector(".form-panel").scrollIntoView({behavior: "smooth", block: "start"});
+        } catch (erro) {
+            mostrarStatus(erro.message || "Não foi possível carregar a linguagem.", "error");
+        }
+    }
+
+    async function excluirLinguagem(linguagem) {
+        if (!window.confirm(`Excluir ${linguagem.nome}? Esta operação não pode ser desfeita.`)) {
+            return;
+        }
+
+        mostrarStatus(`Excluindo ${linguagem.nome}...`, "info");
+        try {
+            await requisitar(`/${encodeURIComponent(linguagem.id)}`, {method: "DELETE"});
+            if (campoId.value === linguagem.id) {
+                reiniciarFormulario();
+            }
+            await carregarLinguagens();
+            mostrarStatus(`${linguagem.nome} foi excluída.`, "success");
+        } catch (erro) {
+            mostrarStatus(erro.message || "Não foi possível excluir a linguagem.", "error");
+        }
+    }
+
+    function reiniciarFormulario() {
+        formulario.reset();
+        campoId.value = "";
+        modoFormulario.textContent = "Novo registro";
+        tituloFormulario.textContent = "Cadastrar linguagem";
+        botaoSalvar.textContent = "Salvar linguagem";
+        botaoCancelar.hidden = true;
+        limparErros();
+    }
+
+    formulario.addEventListener("submit", async (evento) => {
+        evento.preventDefault();
+        limparErros();
+
+        const id = campoId.value;
+        const payload = {
+            nome: campoNome.value,
+            dataCriacao: campoDataCriacao.value || null,
+            autor: campoAutor.value
+        };
+
+        definirOcupado(true);
+        try {
+            const linguagem = await requisitar(id ? `/${encodeURIComponent(id)}` : "", {
+                method: id ? "PUT" : "POST",
+                body: JSON.stringify(payload)
+            });
+            reiniciarFormulario();
+            await carregarLinguagens();
+            mostrarStatus(`${linguagem.nome} foi ${id ? "atualizada" : "criada"} com sucesso.`, "success");
+        } catch (erro) {
+            exibirErrosDeCampo(erro.fieldErrors);
+            mostrarStatus(erro.message || "Não foi possível salvar a linguagem.", "error");
+        } finally {
+            definirOcupado(false);
+        }
+    });
+
+    botaoCancelar.addEventListener("click", reiniciarFormulario);
+    carregarLinguagens();
+</script>
+</body>
+</html>

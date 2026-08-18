@@ -158,8 +158,21 @@ A carga é idempotente: reiniciar a aplicação não duplica nem sobrescreve os 
 Verifique a aplicação:
 
 ```bash
-curl -i http://localhost:8080/api/linguagens
+curl -i http://localhost:8080/
 ```
+
+## Interface web
+
+O projeto possui duas páginas próprias servidas diretamente pelo Spring Boot:
+
+| URL | Finalidade |
+|---|---|
+| `http://localhost:8080/` | Apresentação do projeto e acessos principais |
+| `http://localhost:8080/crud.html` | Cliente completo para criar, consultar, atualizar e excluir linguagens |
+
+O cliente CRUD está inteiro em um único arquivo e utiliza somente HTML, CSS e JavaScript nativos. As operações são realizadas com `fetch`, sem framework ou biblioteca externa. Erros de validação devolvidos pela API são apresentados junto aos respectivos campos.
+
+A página inicial também oferece acesso direto ao CRUD e à documentação OpenAPI.
 
 ## Documentação interativa da API
 

@@ -89,3 +89,13 @@
 **Alternativas consideradas:** manter somente exemplos manuais no README, gerar documentação estática com Spring REST Docs ou configurar Swagger UI manualmente.
 
 **Consequências:** a aplicação passa a expor a interface visual em `/docs` e o contrato JSON em `/v3/api-docs`, com uma dependência adicional compatível com Spring Boot 3.5.16.
+
+## ADR-010 — Cliente web sem framework
+
+**Decisão:** servir uma página inicial em `/` e implementar o cliente CRUD em um único `crud.html`, usando somente HTML, CSS e JavaScript com `fetch`.
+
+**Motivação:** permitir que os estudantes acompanhem diretamente a relação entre eventos da interface, requisições HTTP, DTOs e respostas da API.
+
+**Alternativas consideradas:** React, Vue, Angular, bibliotecas de requisição e templates renderizados no servidor.
+
+**Consequências:** não há dependência ou processo de build de frontend. A interface é propositalmente pequena e consome somente os contratos REST públicos.
