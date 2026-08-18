@@ -86,6 +86,8 @@ curl -i http://localhost:8080/api/linguagens
 
 Os testes Testcontainers precisam do daemon Docker disponível. Eles criam seu próprio MongoDB e não dependem do `compose.yaml` nem dos dados locais.
 
+O contêiner de integração usa `mongo:7.0`. MongoDB 8.x não inicia em hosts com kernel Linux entre 6.19 e 7.0.13 por uma incompatibilidade conhecida com TCMalloc; o Compose de desenvolvimento permanece inalterado e volta a funcionar nesse host após atualização para kernel 7.0.14 ou posterior.
+
 ## Definition of Done
 
 Uma tarefa somente está concluída quando:
