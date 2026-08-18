@@ -136,6 +136,14 @@ SPRING_DATA_MONGODB_URI='mongodb://usuario:senha@servidor:27017/banco?authSource
 
 Não registre credenciais reais no repositório.
 
+Para carregar os exemplos didáticos Java, Python, C, Rust e JavaScript, inicie a aplicação com o profile `dev`:
+
+```bash
+SPRING_PROFILES_ACTIVE=dev ./mvnw spring-boot:run
+```
+
+A carga é idempotente: registros existentes com os mesmos identificadores não são duplicados nem sobrescritos. As datas dos exemplos são aproximações didáticas quando não há uma data oficial única.
+
 Para abrir o shell do MongoDB pelo próprio contêiner:
 
 ```bash
