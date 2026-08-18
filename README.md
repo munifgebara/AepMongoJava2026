@@ -306,6 +306,7 @@ O Mongo Express foi mantido por ser simples para a demonstração em sala. A ima
 
 - `AGENTS.md`: contrato arquitetural e regras para agentes de IA;
 - `HARNESS.md`: comandos operacionais e Definition of Done;
+- `docs/apresentacao.html`: apresentação de slides autocontida para uso em aula;
 - `docs/architecture.md`: fluxo e responsabilidades das camadas;
 - `docs/decisions.md`: decisões arquiteturais em pequenas ADRs;
 - `docs/http-api.md`: contratos HTTP detalhados;

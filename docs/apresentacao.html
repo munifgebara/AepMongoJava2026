@@ -1,0 +1,1799 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Slides didáticos do projeto AEP Mongo Java 2026">
+    <title>AEP Mongo Java 2026 — Apresentação didática</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --ink: #f6f2e8;
+            --muted: #a9bbb5;
+            --canvas: #0b1916;
+            --surface: #122723;
+            --surface-2: #18342e;
+            --line: rgba(217, 232, 226, 0.16);
+            --green: #62d2aa;
+            --green-dark: #237c63;
+            --amber: #f0ba55;
+            --coral: #f08376;
+            --blue: #75bce8;
+            --violet: #bca7f2;
+            --shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: var(--canvas);
+        }
+
+        body {
+            color: var(--ink);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .deck {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background:
+                    radial-gradient(circle at 10% 10%, rgba(98, 210, 170, 0.1), transparent 32rem),
+                    radial-gradient(circle at 90% 90%, rgba(240, 186, 85, 0.08), transparent 32rem),
+                    var(--canvas);
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: clamp(34px, 5vw, 74px) clamp(40px, 7vw, 112px) clamp(66px, 8vh, 92px);
+            display: grid;
+            place-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateX(32px);
+            transition: opacity 220ms ease, transform 220ms ease, visibility 220ms;
+        }
+
+        .slide.active {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-content {
+            width: min(1440px, 100%);
+            max-height: 100%;
+        }
+
+        .slide::before {
+            content: attr(data-section);
+            position: absolute;
+            top: 24px;
+            left: clamp(40px, 7vw, 112px);
+            color: var(--green);
+            font-size: 0.72rem;
+            font-weight: 850;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1,
+        h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            font-weight: 500;
+            letter-spacing: -0.045em;
+        }
+
+        h1 {
+            max-width: 1080px;
+            margin-bottom: 26px;
+            font-size: clamp(3.5rem, 8vw, 8rem);
+            line-height: 0.92;
+        }
+
+        h2 {
+            margin-bottom: clamp(24px, 4vh, 46px);
+            font-size: clamp(2.4rem, 5vw, 5rem);
+            line-height: 0.98;
+        }
+
+        h3 {
+            margin-bottom: 10px;
+            font-size: clamp(1rem, 1.7vw, 1.35rem);
+            letter-spacing: -0.02em;
+        }
+
+        p,
+        li,
+        td,
+        th {
+            font-size: clamp(0.86rem, 1.5vw, 1.25rem);
+            line-height: 1.5;
+        }
+
+        .lead {
+            max-width: 980px;
+            color: var(--muted);
+            font-size: clamp(1.05rem, 2vw, 1.55rem);
+            line-height: 1.55;
+        }
+
+        .accent {
+            color: var(--green);
+            font-style: italic;
+        }
+
+        .amber {
+            color: var(--amber);
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .eyebrow {
+            margin-bottom: 14px;
+            color: var(--amber);
+            font-size: 0.8rem;
+            font-weight: 850;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .grid-2,
+        .grid-3,
+        .grid-4 {
+            display: grid;
+            gap: clamp(14px, 2vw, 28px);
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .card {
+            min-width: 0;
+            padding: clamp(17px, 2.5vw, 28px);
+            border: 1px solid var(--line);
+            border-radius: 19px;
+            background: rgba(18, 39, 35, 0.8);
+            box-shadow: var(--shadow);
+        }
+
+        .card p:last-child,
+        .card ul:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-number {
+            display: block;
+            margin-bottom: 22px;
+            color: var(--green);
+            font: 800 0.72rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+            letter-spacing: 0.12em;
+        }
+
+        .callout {
+            padding: 18px 22px;
+            color: var(--ink);
+            border-left: 4px solid var(--amber);
+            border-radius: 0 14px 14px 0;
+            background: rgba(240, 186, 85, 0.09);
+        }
+
+        .callout strong {
+            color: var(--amber);
+        }
+
+        ul,
+        ol {
+            margin: 0;
+            padding-left: 1.25em;
+        }
+
+        li + li {
+            margin-top: 8px;
+        }
+
+        .check-list {
+            padding: 0;
+            list-style: none;
+        }
+
+        .check-list li {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .check-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--green);
+            font-weight: 900;
+        }
+
+        pre {
+            margin: 0;
+            padding: clamp(16px, 2.2vw, 26px);
+            overflow: hidden;
+            color: #dbe8e3;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: #07110f;
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.035);
+            white-space: pre-wrap;
+        }
+
+        code {
+            font-family: "JetBrains Mono", "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: clamp(0.66rem, 1.1vw, 0.98rem);
+            line-height: 1.48;
+        }
+
+        :not(pre) > code {
+            padding: 0.13em 0.38em;
+            color: var(--green);
+            border-radius: 5px;
+            background: rgba(98, 210, 170, 0.09);
+        }
+
+        .kw { color: var(--violet); }
+        .type { color: var(--blue); }
+        .str { color: var(--amber); }
+        .ann { color: var(--coral); }
+        .com { color: #718983; font-style: italic; }
+
+        .code-title {
+            margin: 0 0 8px 4px;
+            color: var(--muted);
+            font: 750 0.7rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+            letter-spacing: 0.08em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: rgba(18, 39, 35, 0.76);
+        }
+
+        th,
+        td {
+            padding: 13px 16px;
+            text-align: left;
+            vertical-align: top;
+            border-bottom: 1px solid var(--line);
+        }
+
+        th {
+            color: var(--green);
+            font-size: clamp(0.72rem, 1.15vw, 0.95rem);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .flow {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .flow-node {
+            min-width: 0;
+            flex: 1;
+            padding: 20px 12px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            border: 1px solid rgba(98, 210, 170, 0.34);
+            border-radius: 15px;
+            background: rgba(35, 124, 99, 0.12);
+        }
+
+        .flow-node strong {
+            display: block;
+            font-size: clamp(0.78rem, 1.35vw, 1.05rem);
+        }
+
+        .flow-node small {
+            margin-top: 5px;
+            color: var(--muted);
+        }
+
+        .arrow {
+            display: grid;
+            place-items: center;
+            color: var(--amber);
+            font-size: 1.5rem;
+        }
+
+        .tree {
+            padding: 22px 26px;
+            color: #dbe8e3;
+            border: 1px solid var(--line);
+            border-radius: 17px;
+            background: #07110f;
+            font: clamp(0.68rem, 1.2vw, 1rem)/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+            white-space: pre;
+        }
+
+        .tree .folder { color: var(--amber); }
+        .tree .important { color: var(--green); font-weight: 800; }
+
+        .docker-map {
+            display: grid;
+            grid-template-columns: 0.8fr auto 1fr auto 1fr;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .machine,
+        .container-box,
+        .volume {
+            padding: 25px 18px;
+            text-align: center;
+            border-radius: 18px;
+        }
+
+        .machine {
+            color: var(--canvas);
+            background: var(--amber);
+        }
+
+        .container-box {
+            border: 2px solid var(--green-dark);
+            background: rgba(35, 124, 99, 0.15);
+        }
+
+        .volume {
+            border: 2px dashed var(--blue);
+            background: rgba(117, 188, 232, 0.09);
+        }
+
+        .sequence {
+            display: grid;
+            grid-template-columns: 52px 1fr;
+            gap: 0 18px;
+        }
+
+        .sequence-step {
+            display: contents;
+        }
+
+        .sequence-number {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            color: var(--canvas);
+            font-weight: 900;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        .sequence-text {
+            padding: 7px 0 22px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .sequence-step:last-child .sequence-text {
+            border-bottom: 0;
+        }
+
+        .pyramid {
+            width: min(800px, 100%);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .pyramid-level {
+            padding: 15px 20px;
+            color: var(--canvas);
+            text-align: center;
+            font-weight: 850;
+            border-radius: 10px;
+        }
+
+        .pyramid-level:nth-child(1) { width: 34%; background: var(--amber); }
+        .pyramid-level:nth-child(2) { width: 64%; background: var(--blue); }
+        .pyramid-level:nth-child(3) { width: 94%; background: var(--green); }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            display: block;
+            color: var(--green);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(3rem, 7vw, 7rem);
+            line-height: 1;
+            letter-spacing: -0.06em;
+        }
+
+        .metric-label {
+            color: var(--muted);
+            font-size: clamp(0.82rem, 1.35vw, 1.08rem);
+        }
+
+        .compare {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+        }
+
+        .compare-column {
+            padding: clamp(20px, 3vw, 34px);
+            background: rgba(18, 39, 35, 0.76);
+        }
+
+        .compare-column + .compare-column {
+            border-left: 1px solid var(--line);
+        }
+
+        .compare-column:first-child h3 { color: var(--amber); }
+        .compare-column:last-child h3 { color: var(--green); }
+
+        .browser {
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: #f5f2e9;
+            box-shadow: var(--shadow);
+        }
+
+        .browser-bar {
+            height: 34px;
+            padding: 0 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #dcd8cc;
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #a7a49c;
+        }
+
+        .browser-body {
+            min-height: 210px;
+            padding: 28px;
+            color: #19342e;
+        }
+
+        .browser-body h3 {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 2rem;
+        }
+
+        .mini-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .mini-link {
+            padding: 15px;
+            color: white;
+            border-radius: 10px;
+            background: #176b56;
+        }
+
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .tag {
+            padding: 7px 10px;
+            color: var(--green);
+            font-size: clamp(0.68rem, 1vw, 0.85rem);
+            font-weight: 750;
+            border: 1px solid rgba(98, 210, 170, 0.24);
+            border-radius: 999px;
+            background: rgba(98, 210, 170, 0.07);
+        }
+
+        .controls {
+            position: fixed;
+            z-index: 100;
+            right: 24px;
+            bottom: 21px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-button {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(18, 39, 35, 0.86);
+            backdrop-filter: blur(12px);
+        }
+
+        .control-button:hover,
+        .control-button:focus-visible {
+            color: var(--green);
+            border-color: rgba(98, 210, 170, 0.45);
+            outline: none;
+        }
+
+        .counter {
+            min-width: 72px;
+            color: var(--muted);
+            font: 750 0.78rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+            text-align: center;
+        }
+
+        .progress-track {
+            position: fixed;
+            z-index: 100;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-dark), var(--green), var(--amber));
+            transition: width 180ms ease;
+        }
+
+        .keyboard-help {
+            position: fixed;
+            z-index: 100;
+            bottom: 29px;
+            left: 24px;
+            color: #718983;
+            font-size: 0.68rem;
+            letter-spacing: 0.04em;
+        }
+
+        .kbd {
+            padding: 2px 5px;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .flow {
+                display: grid;
+                grid-template-columns: 1fr 24px 1fr;
+            }
+
+            .docker-map {
+                grid-template-columns: 1fr;
+            }
+
+            .docker-map .arrow {
+                transform: rotate(90deg);
+            }
+
+            .keyboard-help {
+                display: none;
+            }
+        }
+
+        @media (max-height: 720px) {
+            .slide {
+                padding-top: 44px;
+                padding-bottom: 58px;
+            }
+
+            h2 {
+                margin-bottom: 22px;
+            }
+
+            p,
+            li,
+            td,
+            th {
+                font-size: 0.86rem;
+            }
+
+            code {
+                font-size: 0.67rem;
+            }
+
+            .card {
+                padding: 16px;
+            }
+        }
+
+        @media print {
+            @page {
+                size: 16in 9in;
+                margin: 0;
+            }
+
+            html,
+            body {
+                height: auto;
+                overflow: visible;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .deck {
+                height: auto;
+            }
+
+            .slide {
+                position: relative;
+                width: 16in;
+                height: 9in;
+                visibility: visible;
+                opacity: 1;
+                transform: none;
+                page-break-after: always;
+            }
+
+            .controls,
+            .progress-track,
+            .keyboard-help {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<main class="deck" id="deck">
+    <section class="slide active" data-section="Abertura">
+        <div class="slide-content">
+            <p class="eyebrow">Paradigmas de Programação · 2026</p>
+            <h1>Uma API para aprender <span class="accent">camadas, contratos e testes.</span></h1>
+            <p class="lead">Java 21 · Spring Boot · MongoDB · HTML/CSS/JavaScript</p>
+            <div class="tag-row">
+                <span class="tag">CRUD REST</span>
+                <span class="tag">DTOs</span>
+                <span class="tag">NoSQL</span>
+                <span class="tag">Testcontainers</span>
+                <span class="tag">OpenAPI</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Abertura">
+        <div class="slide-content">
+            <h2>Roteiro da aula</h2>
+            <div class="grid-4">
+                <div class="card"><span class="card-number">01</span><h3>Infraestrutura</h3><p>Compose, MongoDB, portas, volume e <code>.env</code>.</p></div>
+                <div class="card"><span class="card-number">02</span><h3>Projeto</h3><p>Maven, arquivos para IA e organização das pastas.</p></div>
+                <div class="card"><span class="card-number">03</span><h3>Backend</h3><p>DTO, Model, Mapper, Service, Repository e Controller.</p></div>
+                <div class="card"><span class="card-number">04</span><h3>Qualidade</h3><p>Testes, cobertura, páginas web e observações.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Projeto">
+        <div class="slide-content">
+            <div class="grid-2">
+                <div>
+                    <p class="eyebrow">O que construímos?</p>
+                    <h2>Um CRUD didático de linguagens de programação</h2>
+                    <p class="lead">Cada linguagem possui <code>id</code>, <code>nome</code>, <code>dataCriacao</code> e <code>autor</code>.</p>
+                </div>
+                <div class="card">
+                    <h3>Objetivos pedagógicos</h3>
+                    <ul class="check-list">
+                        <li>Visualizar responsabilidades entre objetos.</li>
+                        <li>Separar persistência de representação HTTP.</li>
+                        <li>Praticar injeção de dependência e interfaces.</li>
+                        <li>Comparar testes isolados e testes integrados.</li>
+                        <li>Persistir documentos em um banco NoSQL real.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Projeto">
+        <div class="slide-content">
+            <h2>O que podemos abrir no navegador?</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <span class="card-number">localhost:8080/</span>
+                    <h3>Página inicial</h3>
+                    <p>Apresenta o projeto e oferece os dois acessos principais.</p>
+                </div>
+                <div class="card">
+                    <span class="card-number">/crud.html</span>
+                    <h3>Cliente CRUD</h3>
+                    <p>Opera a API com HTML, CSS e <code>fetch</code> nativo.</p>
+                </div>
+                <div class="card">
+                    <span class="card-number">/docs</span>
+                    <h3>Swagger UI</h3>
+                    <p>Exibe o contrato OpenAPI e permite testar endpoints.</p>
+                </div>
+            </div>
+            <div class="callout" style="margin-top: 24px"><strong>Importante:</strong> as três experiências usam o mesmo backend e os mesmos contratos.</div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Arquitetura">
+        <div class="slide-content">
+            <h2>Arquitetura em camadas</h2>
+            <div class="flow">
+                <div class="flow-node"><strong>Navegador</strong><small>JSON / HTML</small></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>Controller</strong><small>HTTP</small></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>DTO</strong><small>contrato</small></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>Service</strong><small>caso de uso</small></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>Repository</strong><small>persistência</small></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>MongoDB</strong><small>documento</small></div>
+            </div>
+            <div class="callout" style="margin-top: 30px"><strong>Ideia central:</strong> cada camada conhece apenas o necessário para cumprir sua responsabilidade.</div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Arquitetura">
+        <div class="slide-content">
+            <h2>A viagem de um <code>POST</code></h2>
+            <div class="sequence">
+                <div class="sequence-step"><span class="sequence-number">1</span><div class="sequence-text">O navegador envia JSON para <code>POST /api/linguagens</code>.</div></div>
+                <div class="sequence-step"><span class="sequence-number">2</span><div class="sequence-text">O Controller converte o JSON em <code>LinguagemCreateRequest</code> e aplica <code>@Valid</code>.</div></div>
+                <div class="sequence-step"><span class="sequence-number">3</span><div class="sequence-text">O Service coordena o caso de uso; o Mapper cria um Model sem ID.</div></div>
+                <div class="sequence-step"><span class="sequence-number">4</span><div class="sequence-text"><code>repository.save</code> envia o documento ao MongoDB, que gera o ID.</div></div>
+                <div class="sequence-step"><span class="sequence-number">5</span><div class="sequence-text">O Model salvo volta como <code>LinguagemResponse</code>, com status <code>201</code> e cabeçalho <code>Location</code>.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Arquitetura">
+        <div class="slide-content">
+            <h2>Responsabilidade não é apenas uma pasta</h2>
+            <table>
+                <thead><tr><th>Tipo</th><th>Pergunta que responde</th><th>Não deveria fazer</th></tr></thead>
+                <tbody>
+                <tr><td>Controller</td><td>Como falar HTTP?</td><td>Consultar o banco diretamente.</td></tr>
+                <tr><td>DTO</td><td>Qual é o contrato deste uso?</td><td>Representar a coleção MongoDB.</td></tr>
+                <tr><td>Service</td><td>Como executar o caso de uso?</td><td>Conhecer detalhes de JSON.</td></tr>
+                <tr><td>Repository</td><td>Como persistir e consultar?</td><td>Decidir regras de negócio.</td></tr>
+                <tr><td>Mapper</td><td>Como converter representações?</td><td>Salvar ou responder HTTP.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Arquivos">
+        <div class="slide-content">
+            <h2>Arquivos na raiz</h2>
+            <div class="grid-2">
+                <div class="tree"><span class="folder">AepMongoJava2026/</span>
+├── <span class="important">AGENTS.md</span>
+├── <span class="important">HARNESS.md</span>
+├── README.md
+├── TODO.md
+├── pom.xml
+├── compose.yaml
+├── .env
+├── .agents/skills/
+├── docs/
+└── src/</div>
+                <div class="card">
+                    <h3>Duas naturezas de arquivo</h3>
+                    <p><strong class="amber">Executáveis:</strong> Java, YAML, HTML, Compose e Maven.</p>
+                    <p><strong style="color:var(--green)">Contextuais:</strong> regras, decisões, arquitetura, comandos e próximos passos.</p>
+                    <p class="muted">Os dois grupos são versionados: código explica o comportamento; documentação explica intenção e continuidade.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Arquivos">
+        <div class="slide-content">
+            <h2>Organização de <code>src</code></h2>
+            <div class="grid-2">
+                <div class="tree"><span class="folder">src/main/</span>
+├── java/.../
+│   ├── configuration/
+│   ├── controller/
+│   ├── dto/
+│   ├── exception/
+│   ├── mapper/
+│   ├── model/
+│   ├── repository/
+│   └── service/
+└── resources/
+    ├── application.yml
+    └── static/
+        ├── index.html
+        └── crud.html</div>
+                <div class="tree"><span class="folder">src/test/java/.../</span>
+├── controller/
+│   └── LinguagemControllerTest
+├── documentation/
+│   └── ProjectWebPagesTest
+├── integration/
+│   └── LinguagemApiIT
+└── service/
+    └── LinguagemServiceTest</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Docker Compose">
+        <div class="slide-content">
+            <h2>O que o Compose resolve?</h2>
+            <div class="grid-3">
+                <div class="card"><span class="card-number">SERVIÇO 01</span><h3>MongoDB</h3><p>Banco de documentos, autenticação, healthcheck e volume persistente.</p></div>
+                <div class="card"><span class="card-number">SERVIÇO 02</span><h3>Mongo Express</h3><p>Interface visual web simples para inspecionar bancos e documentos.</p></div>
+                <div class="card"><span class="card-number">REDE + VOLUME</span><h3>Infraestrutura</h3><p>DNS interno pelo nome <code>mongo</code> e dados em <code>mongo-data</code>.</p></div>
+            </div>
+            <p class="lead" style="margin-top: 26px">O Compose descreve o ambiente; a aplicação Java continua sendo executada separadamente.</p>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Docker Compose">
+        <div class="slide-content">
+            <div class="grid-2">
+                <div>
+                    <p class="code-title">compose.yaml · trecho resumido</p>
+                    <pre><code>services:
+  mongo:
+    image: mongo:${MONGO_VERSION:-8.0}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    ports:
+      - "127.0.0.1:${MONGO_PORT:-27018}:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  mongo-express:
+    depends_on:
+      mongo:
+        condition: service_healthy</code></pre>
+                </div>
+                <div class="card">
+                    <h3>Boas decisões visíveis</h3>
+                    <ul>
+                        <li>Imagem com versão, sem <code>latest</code>.</li>
+                        <li>Porta vinculada a <code>127.0.0.1</code>.</li>
+                        <li>Porta externa <code>27018</code> evita conflitos.</li>
+                        <li>Volume usa o caminho oficial <code>/data/db</code>.</li>
+                        <li>Mongo Express espera o banco ficar saudável.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Docker Compose">
+        <div class="slide-content">
+            <h2>Por que existe um <code>.env</code>?</h2>
+            <div class="grid-2">
+                <div>
+                    <p class="code-title">.env · valores locais didáticos</p>
+                    <pre><code>MONGO_ROOT_USERNAME=root
+MONGO_ROOT_PASSWORD=Mongo
+MONGO_PORT=27018
+MONGO_VERSION=8.0
+
+MONGO_EXPRESS_USERNAME=cesumar
+MONGO_EXPRESS_PASSWORD=cesumar
+MONGO_EXPRESS_PORT=18081</code></pre>
+                </div>
+                <div class="card">
+                    <ul class="check-list">
+                        <li>Docker Compose carrega <code>.env</code> automaticamente.</li>
+                        <li>Separa valores variáveis da estrutura dos serviços.</li>
+                        <li>Variáveis exportadas no shell têm precedência.</li>
+                        <li>Neste projeto, os valores são públicos e didáticos.</li>
+                    </ul>
+                    <div class="callout" style="margin-top:18px"><strong>.env não é cofre.</strong> Em produção, credenciais reais não devem ser versionadas.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Docker Compose">
+        <div class="slide-content">
+            <h2>Portas, rede e persistência</h2>
+            <div class="docker-map">
+                <div class="machine"><strong>Máquina</strong><br>27018 · 18081</div>
+                <div class="arrow">→</div>
+                <div class="container-box"><strong>MongoDB</strong><br><span class="muted">mongo:27017</span></div>
+                <div class="arrow">↔</div>
+                <div class="volume"><strong>mongo-data</strong><br><span class="muted">/data/db</span></div>
+            </div>
+            <div class="grid-2" style="margin-top: 28px">
+                <div class="card"><h3>Dentro da rede</h3><p>Mongo Express usa <code>mongo:27017</code>. O nome do serviço funciona como DNS.</p></div>
+                <div class="card"><h3>Fora dos contêineres</h3><p>Spring Boot usa <code>localhost:27018</code>. São dois pontos de vista da mesma porta.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Maven">
+        <div class="slide-content">
+            <h2><code>pom.xml</code>: identidade e plataforma</h2>
+            <div class="grid-2">
+                <pre><code><span class="com">&lt;!-- O parent gerencia versões compatíveis --&gt;</span>
+&lt;parent&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+  &lt;version&gt;3.5.16&lt;/version&gt;
+&lt;/parent&gt;
+
+&lt;groupId&gt;br.com.munif.cesumar&lt;/groupId&gt;
+&lt;artifactId&gt;AepMongoJava2026&lt;/artifactId&gt;
+
+&lt;properties&gt;
+  &lt;java.version&gt;21&lt;/java.version&gt;
+  &lt;springdoc.version&gt;2.9.0&lt;/springdoc.version&gt;
+&lt;/properties&gt;</code></pre>
+                <div class="card">
+                    <h3>O que o Maven faz?</h3>
+                    <ul>
+                        <li>Declara identidade e versão do projeto.</li>
+                        <li>Resolve bibliotecas transitivas.</li>
+                        <li>Compila para Java 21.</li>
+                        <li>Executa testes e empacota o JAR.</li>
+                        <li>Garante um build reproduzível com <code>./mvnw</code>.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Maven">
+        <div class="slide-content">
+            <h2>Principais bibliotecas</h2>
+            <table>
+                <thead><tr><th>Dependência</th><th>Responsabilidade</th></tr></thead>
+                <tbody>
+                <tr><td><code>spring-boot-starter-web</code></td><td>Spring MVC, JSON e servidor Tomcat embutido.</td></tr>
+                <tr><td><code>spring-boot-starter-data-mongodb</code></td><td>Mapeamento de documentos, repositories e driver MongoDB.</td></tr>
+                <tr><td><code>spring-boot-starter-validation</code></td><td>Jakarta Validation: <code>@NotBlank</code>, <code>@NotNull</code> e <code>@Valid</code>.</td></tr>
+                <tr><td><code>springdoc-openapi-starter-webmvc-ui</code></td><td>Contrato OpenAPI e página Swagger UI em <code>/docs</code>.</td></tr>
+                <tr><td><code>spring-boot-starter-test</code></td><td>JUnit 5, Mockito, AssertJ, MockMvc e utilitários Spring.</td></tr>
+                <tr><td><code>testcontainers-mongodb</code></td><td>MongoDB real e descartável nos testes de integração.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Maven">
+        <div class="slide-content">
+            <h2>Plugins: além de compilar</h2>
+            <div class="grid-3">
+                <div class="card"><span class="card-number">BOOT</span><h3>Spring Boot Maven Plugin</h3><p>Cria um JAR executável com aplicação e dependências.</p></div>
+                <div class="card"><span class="card-number">INTEGRAÇÃO</span><h3>Maven Failsafe</h3><p>Executa classes <code>*IT</code> nas fases <code>integration-test</code> e <code>verify</code>.</p></div>
+                <div class="card"><span class="card-number">MÉTRICA</span><h3>JaCoCo</h3><p>Instrumenta o bytecode, gera relatório e exige pelo menos 70% de linhas.</p></div>
+            </div>
+            <pre style="margin-top: 24px"><code>./mvnw clean test    <span class="com"># testes rápidos</span>
+./mvnw clean verify  <span class="com"># todos os testes + cobertura</span></code></pre>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Arquivos de IA">
+        <div class="slide-content">
+            <h2>Contexto persistente para agentes</h2>
+            <div class="tree"><span class="folder">contexto do projeto</span>
+├── <span class="important">AGENTS.md</span>                 regras e contrato arquitetural
+├── <span class="important">HARNESS.md</span>                operação e Definition of Done
+├── docs/architecture.md       fluxo entre camadas
+├── docs/decisions.md          pequenas ADRs
+├── docs/http-api.md           contratos HTTP
+├── TODO.md                    evoluções deliberadas
+└── .agents/skills/
+    ├── spring-crud/SKILL.md
+    ├── testing/SKILL.md
+    └── architecture-review/SKILL.md</div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Arquivos de IA">
+        <div class="slide-content">
+            <h2>Para que serve cada arquivo?</h2>
+            <div class="grid-3">
+                <div class="card"><h3>AGENTS.md</h3><p>É o contrato principal: stack, packages, arquitetura, regras e processo de trabalho.</p></div>
+                <div class="card"><h3>HARNESS.md</h3><p>Explica como compilar, testar, executar e saber quando uma tarefa terminou.</p></div>
+                <div class="card"><h3>Skills</h3><p>Procedimentos reutilizáveis e especializados para CRUD, testes e revisão.</p></div>
+                <div class="card"><h3>architecture.md</h3><p>Mostra relações e responsabilidades, não apenas diretórios.</p></div>
+                <div class="card"><h3>decisions.md</h3><p>Registra decisão, motivação, alternativas e consequências.</p></div>
+                <div class="card"><h3>TODO.md</h3><p>Evita implementar antecipadamente ideias que ainda não são requisito.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Arquivos de IA">
+        <div class="slide-content">
+            <h2>Engenharia assistida por IA × “vibe coding”</h2>
+            <div class="compare">
+                <div class="compare-column">
+                    <h3>Vibe coding</h3>
+                    <ul>
+                        <li>Prompt orientado principalmente ao resultado.</li>
+                        <li>Aceitação rápida do código gerado.</li>
+                        <li>Decisões ficam implícitas na conversa.</li>
+                        <li>Funciona bem para explorar e prototipar.</li>
+                        <li>Risco maior de inconsistência ao evoluir.</li>
+                    </ul>
+                </div>
+                <div class="compare-column">
+                    <h3>Neste projeto</h3>
+                    <ul>
+                        <li>Contrato arquitetural versionado.</li>
+                        <li>Skills descrevem processos repetíveis.</li>
+                        <li>ADRs tornam decisões recuperáveis.</li>
+                        <li>Testes e Definition of Done dão evidência.</li>
+                        <li>Commits pequenos contam a evolução.</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="lead" style="margin-top:24px">Não é “IA versus programador”: é transformar intenção, revisão e evidência em parte do repositório.</p>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend">
+        <div class="slide-content">
+            <h2>Inicialização e configuração</h2>
+            <div class="grid-2">
+                <div>
+                    <p class="code-title">AepMongoJava2026Application.java</p>
+                    <pre><code><span class="ann">@SpringBootApplication</span>
+<span class="kw">public class</span> <span class="type">AepMongoJava2026Application</span> {
+    <span class="kw">public static void</span> main(String[] args) {
+        SpringApplication.run(
+            AepMongoJava2026Application.class, args);
+    }
+}</code></pre>
+                </div>
+                <div>
+                    <p class="code-title">application.yml</p>
+                    <pre><code>spring:
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:
+        mongodb://root:Mongo@localhost:27018/
+        linguagens?authSource=admin}
+
+springdoc:
+  swagger-ui:
+    path: /docs</code></pre>
+                </div>
+            </div>
+            <p class="lead" style="margin-top:20px">O valor após <code>:</code> é o padrão local; a variável de ambiente pode substituí-lo.</p>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · Model">
+        <div class="slide-content">
+            <div class="grid-2">
+                <div>
+                    <p class="eyebrow">Persistência</p>
+                    <h2>O Model representa o documento</h2>
+                    <ul class="check-list">
+                        <li><code>@Document</code> seleciona a coleção.</li>
+                        <li><code>@Id</code> identifica o documento.</li>
+                        <li>Campos planos tornam o exemplo legível.</li>
+                        <li>Setters permitem atualizar o objeto existente.</li>
+                        <li>Não é devolvido diretamente pela API.</li>
+                    </ul>
+                </div>
+                <pre><code><span class="ann">@Document</span>(collection = <span class="str">"linguagens"</span>)
+<span class="kw">public class</span> <span class="type">Linguagem</span> {
+
+    <span class="ann">@Id</span>
+    <span class="kw">private</span> String id;
+    <span class="kw">private</span> String nome;
+    <span class="kw">private</span> LocalDate dataCriacao;
+    <span class="kw">private</span> String autor;
+
+    <span class="com">// construtor, getters e setters</span>
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · DTO">
+        <div class="slide-content">
+            <h2>DTOs são contratos de casos de uso</h2>
+            <div class="grid-2">
+                <pre><code><span class="kw">public record</span> <span class="type">LinguagemCreateRequest</span>(
+    <span class="ann">@NotBlank</span>(message = <span class="str">"nome é obrigatório"</span>)
+    String nome,
+
+    <span class="ann">@NotNull</span>(message = <span class="str">"dataCriacao é obrigatória"</span>)
+    LocalDate dataCriacao,
+
+    <span class="ann">@NotBlank</span>(message = <span class="str">"autor é obrigatório"</span>)
+    String autor) {}</code></pre>
+                <div class="card">
+                    <h3>Quatro contratos, quatro intenções</h3>
+                    <ul>
+                        <li><code>CreateRequest</code>: entrada do POST, sem ID.</li>
+                        <li><code>UpdateRequest</code>: entrada do PUT, sem ID.</li>
+                        <li><code>Response</code>: detalhe completo.</li>
+                        <li><code>SummaryResponse</code>: lista com ID e nome.</li>
+                    </ul>
+                    <div class="callout"><strong>Mesmo formato hoje</strong> não significa mesma responsabilidade amanhã.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · Mapper">
+        <div class="slide-content">
+            <h2>Mapper: conversão explícita</h2>
+            <div class="flow" style="margin-bottom:24px">
+                <div class="flow-node"><strong>CreateRequest</strong></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>Linguagem</strong><small>Model</small></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>Response</strong><small>DTO</small></div>
+            </div>
+            <div class="grid-2">
+                <pre><code><span class="kw">public</span> Linguagem toModel(LinguagemCreateRequest request) {
+    <span class="kw">return new</span> Linguagem(
+        <span class="kw">null</span>, request.nome(),
+        request.dataCriacao(), request.autor());
+}</code></pre>
+                <pre><code><span class="kw">public void</span> updateModel(
+        LinguagemUpdateRequest request,
+        Linguagem linguagem) {
+    linguagem.setNome(request.nome());
+    linguagem.setDataCriacao(request.dataCriacao());
+    linguagem.setAutor(request.autor());
+}</code></pre>
+            </div>
+            <p class="lead" style="margin-top:20px">A atualização não recebe nem altera o ID: ele veio da URL e pertence ao documento já localizado.</p>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · Repository">
+        <div class="slide-content">
+            <div class="grid-2">
+                <div>
+                    <p class="eyebrow">Persistência</p>
+                    <h2>Uma interface, uma implementação gerada</h2>
+                    <p class="lead">O Spring Data cria, em tempo de execução, um objeto que implementa esta interface.</p>
+                </div>
+                <pre><code><span class="kw">public interface</span> <span class="type">LinguagemRepository</span>
+        <span class="kw">extends</span> MongoRepository&lt;Linguagem, String&gt; {
+}</code></pre>
+            </div>
+            <div class="grid-4" style="margin-top:28px">
+                <div class="card"><h3><code>findAll()</code></h3><p>Lista documentos.</p></div>
+                <div class="card"><h3><code>findById()</code></h3><p>Retorna <code>Optional</code>.</p></div>
+                <div class="card"><h3><code>save()</code></h3><p>Insere ou atualiza.</p></div>
+                <div class="card"><h3><code>delete()</code></h3><p>Remove documento.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · Persistência">
+        <div class="slide-content">
+            <h2>Usamos Hibernate?</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h3 style="color:var(--coral)">Não.</h3>
+                    <ul>
+                        <li>Não há <code>spring-data-jpa</code>.</li>
+                        <li>Não há <code>@Entity</code> ou <code>@Table</code>.</li>
+                        <li>Não há SQL, JDBC ou <code>EntityManager</code>.</li>
+                        <li>Hibernate é um ORM usado principalmente com bancos relacionais.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3 style="color:var(--green)">Usamos Spring Data MongoDB.</h3>
+                    <ul>
+                        <li><code>MongoRepository</code> fornece operações.</li>
+                        <li><code>MappingMongoConverter</code> converte objeto ↔ BSON.</li>
+                        <li>O MongoDB Java Driver envia comandos ao banco.</li>
+                        <li><code>@Document</code> mapeia classe para coleção.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · Persistência">
+        <div class="slide-content">
+            <h2>Como <code>save()</code> grava?</h2>
+            <div class="sequence">
+                <div class="sequence-step"><span class="sequence-number">1</span><div class="sequence-text">Service entrega um objeto <code>Linguagem</code> ao Repository.</div></div>
+                <div class="sequence-step"><span class="sequence-number">2</span><div class="sequence-text">Spring Data lê <code>@Document</code>, <code>@Id</code> e as propriedades.</div></div>
+                <div class="sequence-step"><span class="sequence-number">3</span><div class="sequence-text">O converter produz BSON, preservando <code>LocalDate</code> conforme os codecs configurados.</div></div>
+                <div class="sequence-step"><span class="sequence-number">4</span><div class="sequence-text">Sem ID, ocorre inserção; com ID existente, o documento é substituído/atualizado.</div></div>
+                <div class="sequence-step"><span class="sequence-number">5</span><div class="sequence-text">O driver recebe a resposta e o Repository devolve o Model salvo.</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · Service">
+        <div class="slide-content">
+            <h2>Service: casos de uso e composição</h2>
+            <div class="grid-2">
+                <pre><code><span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="type">LinguagemService</span> {
+    <span class="kw">private final</span> LinguagemRepository repository;
+    <span class="kw">private final</span> LinguagemMapper mapper;
+
+    <span class="kw">public</span> LinguagemService(
+            LinguagemRepository repository,
+            LinguagemMapper mapper) {
+        <span class="kw">this</span>.repository = repository;
+        <span class="kw">this</span>.mapper = mapper;
+    }
+}</code></pre>
+                <div class="card">
+                    <h3>Conceitos de OO visíveis</h3>
+                    <ul class="check-list">
+                        <li>Encapsulamento dos casos de uso.</li>
+                        <li>Composição de Repository e Mapper.</li>
+                        <li>Injeção por construtor.</li>
+                        <li>Dependência da interface do Repository.</li>
+                        <li>Testabilidade pela substituição de colaboradores.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · Service">
+        <div class="slide-content">
+            <h2>Atualizar sem perder o ID</h2>
+            <pre><code><span class="kw">public</span> LinguagemResponse atualizar(
+        String id, LinguagemUpdateRequest request) {
+
+    Linguagem linguagem = buscarModelPorId(id); <span class="com">// ID vem da URL</span>
+    mapper.updateModel(request, linguagem);      <span class="com">// muda apenas dados editáveis</span>
+    <span class="kw">return</span> mapper.toResponse(
+        repository.save(linguagem));             <span class="com">// persiste o mesmo documento</span>
+}
+
+<span class="kw">private</span> Linguagem buscarModelPorId(String id) {
+    <span class="kw">return</span> repository.findById(id)
+        .orElseThrow(() -&gt; <span class="kw">new</span> LinguagemNotFoundException(id));
+}</code></pre>
+            <div class="callout" style="margin-top:22px"><strong>Regra:</strong> o corpo do PUT não escolhe qual registro será atualizado.</div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · Controller">
+        <div class="slide-content">
+            <h2>Controller: protocolo HTTP</h2>
+            <div class="grid-2">
+                <pre><code><span class="ann">@PostMapping</span>
+<span class="kw">public</span> ResponseEntity&lt;LinguagemResponse&gt; criar(
+        <span class="ann">@Valid @RequestBody</span> LinguagemCreateRequest request) {
+
+    LinguagemResponse response = service.criar(request);
+    URI location = ServletUriComponentsBuilder
+        .fromCurrentRequest().path(<span class="str">"/{id}"</span>)
+        .buildAndExpand(response.id()).toUri();
+
+    <span class="kw">return</span> ResponseEntity.created(location).body(response);
+}</code></pre>
+                <table>
+                    <thead><tr><th>Método</th><th>Status</th></tr></thead>
+                    <tbody>
+                    <tr><td>GET lista / detalhe</td><td>200</td></tr>
+                    <tr><td>POST</td><td>201 + Location</td></tr>
+                    <tr><td>PUT</td><td>200</td></tr>
+                    <tr><td>DELETE</td><td>204</td></tr>
+                    <tr><td>Ausente</td><td>404</td></tr>
+                    <tr><td>Inválido</td><td>400</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · Exceções">
+        <div class="slide-content">
+            <h2>Erros também possuem contrato</h2>
+            <div class="grid-2">
+                <pre><code><span class="ann">@RestControllerAdvice</span>
+<span class="kw">public class</span> <span class="type">GlobalExceptionHandler</span> {
+
+    <span class="ann">@ExceptionHandler</span>(LinguagemNotFoundException.class)
+    <span class="kw">public</span> ResponseEntity&lt;ApiError&gt; handleNotFound(...) {
+        <span class="kw">return</span> buildResponse(
+            HttpStatus.NOT_FOUND,
+            exception.getMessage(),
+            request.getRequestURI(), Map.of());
+    }
+}</code></pre>
+                <pre><code>{
+  <span class="str">"status"</span>: 400,
+  <span class="str">"error"</span>: <span class="str">"Bad Request"</span>,
+  <span class="str">"message"</span>: <span class="str">"Dados de entrada inválidos"</span>,
+  <span class="str">"path"</span>: <span class="str">"/api/linguagens"</span>,
+  <span class="str">"fieldErrors"</span>: {
+    <span class="str">"nome"</span>: <span class="str">"nome é obrigatório"</span>
+  }
+}</code></pre>
+            </div>
+            <p class="lead" style="margin-top:20px">Controllers não usam vários <code>try/catch</code>; o tratamento é centralizado e consistente.</p>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Backend · Desenvolvimento">
+        <div class="slide-content">
+            <h2>Dados de exemplo sem duplicação</h2>
+            <div class="grid-2">
+                <pre><code><span class="ann">@Configuration</span>
+<span class="ann">@Profile</span>(<span class="str">"dev"</span>)
+<span class="kw">public class</span> <span class="type">DevelopmentDataConfiguration</span> {
+
+    <span class="ann">@Bean</span>
+    CommandLineRunner loadDevelopmentData(
+            LinguagemRepository repository) {
+        <span class="kw">return</span> args -&gt; sampleLanguages().stream()
+            .filter(item -&gt; !repository.existsById(item.getId()))
+            .forEach(repository::save);
+    }
+}</code></pre>
+                <div class="card">
+                    <h3>Por que um profile?</h3>
+                    <ul>
+                        <li>Só roda com <code>SPRING_PROFILES_ACTIVE=dev</code>.</li>
+                        <li>Testes não recebem dados escondidos.</li>
+                        <li>IDs fixos permitem checar existência.</li>
+                        <li>Reiniciar não duplica registros.</li>
+                    </ul>
+                    <div class="tag-row"><span class="tag">Java</span><span class="tag">Python</span><span class="tag">C</span><span class="tag">Rust</span><span class="tag">JavaScript</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Testes">
+        <div class="slide-content">
+            <h2>Estratégia de testes</h2>
+            <div class="grid-2">
+                <div class="pyramid">
+                    <div class="pyramid-level">5 integração</div>
+                    <div class="pyramid-level">14 HTTP e páginas</div>
+                    <div class="pyramid-level">8 Service</div>
+                </div>
+                <div class="card">
+                    <h3>27 testes, propósitos diferentes</h3>
+                    <ul>
+                        <li><strong>Unitário:</strong> rápido, sem Spring e sem banco.</li>
+                        <li><strong>Controller:</strong> contrato HTTP com Service mockado.</li>
+                        <li><strong>Páginas:</strong> rotas, links, OpenAPI e conteúdo estático.</li>
+                        <li><strong>Integração:</strong> fluxo completo contra MongoDB real.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Testes · Unitário">
+        <div class="slide-content">
+            <h2>Service com JUnit 5 e Mockito</h2>
+            <pre><code><span class="ann">@ExtendWith</span>(MockitoExtension.class)
+<span class="kw">class</span> <span class="type">LinguagemServiceTest</span> {
+    <span class="ann">@Mock</span> <span class="kw">private</span> LinguagemRepository repository;
+    <span class="ann">@Mock</span> <span class="kw">private</span> LinguagemMapper mapper;
+    <span class="ann">@InjectMocks</span> <span class="kw">private</span> LinguagemService service;
+
+    <span class="ann">@Test</span>
+    <span class="kw">void</span> deveLancarExcecaoAoBuscarLinguagemInexistente() {
+        when(repository.findById(<span class="str">"inexistente"</span>)).thenReturn(Optional.empty());
+
+        LinguagemNotFoundException exception = assertThrows(
+            LinguagemNotFoundException.class,
+            () -&gt; service.buscarPorId(<span class="str">"inexistente"</span>));
+
+        assertEquals(<span class="str">"Linguagem não encontrada: inexistente"</span>, exception.getMessage());
+        verifyNoInteractions(mapper);
+    }
+}</code></pre>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Testes · Controller">
+        <div class="slide-content">
+            <h2>MockMvc verifica o contrato HTTP</h2>
+            <div class="grid-2">
+                <pre><code>mockMvc.perform(get(<span class="str">"/api/linguagens"</span>))
+    .andExpect(status().isOk())
+    .andExpect(content().contentType(APPLICATION_JSON))
+    .andExpect(jsonPath(<span class="str">"$[0].id"</span>).value(<span class="str">"java"</span>))
+    .andExpect(jsonPath(<span class="str">"$[0].nome"</span>).value(<span class="str">"Java"</span>))
+    .andExpect(jsonPath(<span class="str">"$[0].autor"</span>).doesNotExist())
+    .andExpect(jsonPath(<span class="str">"$[0].dataCriacao"</span>).doesNotExist());</code></pre>
+                <div class="card">
+                    <h3>O que esse teste prova?</h3>
+                    <ul class="check-list">
+                        <li>Status HTTP correto.</li>
+                        <li>Resposta em JSON.</li>
+                        <li>Campos esperados existem.</li>
+                        <li>Campos do detalhe não vazam na lista.</li>
+                        <li>O contrato resumido é intencional.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Testes · Integração">
+        <div class="slide-content">
+            <h2>Testcontainers: MongoDB real e descartável</h2>
+            <div class="grid-2">
+                <pre><code><span class="ann">@Testcontainers</span>
+<span class="ann">@SpringBootTest</span>
+<span class="ann">@AutoConfigureMockMvc</span>
+<span class="ann">@ActiveProfiles</span>(<span class="str">"test"</span>)
+<span class="kw">class</span> <span class="type">LinguagemApiIT</span> {
+
+    <span class="ann">@Container</span>
+    <span class="kw">static final</span> MongoDBContainer MONGO =
+        <span class="kw">new</span> MongoDBContainer(
+            DockerImageName.parse(<span class="str">"mongo:7.0"</span>));
+
+    <span class="ann">@DynamicPropertySource</span>
+    <span class="kw">static void</span> mongoProperties(DynamicPropertyRegistry r) {
+        r.add(<span class="str">"spring.data.mongodb.uri"</span>, MONGO::getReplicaSetUrl);
+    }
+}</code></pre>
+                <div class="card">
+                    <h3>Independência</h3>
+                    <ul>
+                        <li>Não usa o Compose de desenvolvimento.</li>
+                        <li>Não exige MongoDB instalado.</li>
+                        <li>Banco é limpo antes de cada teste.</li>
+                        <li>Contêiner termina com a suíte.</li>
+                        <li>Valida HTTP → Repository → MongoDB.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Cobertura">
+        <div class="slide-content">
+            <h2>Cobertura é um sinal, não o objetivo final</h2>
+            <div class="grid-3">
+                <div class="metric"><span class="metric-value">96,43%</span><span class="metric-label">81 de 84 linhas relevantes</span></div>
+                <div class="metric"><span class="metric-value">70%</span><span class="metric-label">mínimo exigido no build</span></div>
+                <div class="metric"><span class="metric-value">27</span><span class="metric-label">testes comportamentais</span></div>
+            </div>
+            <div class="grid-2" style="margin-top:34px">
+                <pre><code>&lt;counter&gt;LINE&lt;/counter&gt;
+&lt;value&gt;COVEREDRATIO&lt;/value&gt;
+&lt;minimum&gt;0.70&lt;/minimum&gt;</code></pre>
+                <div class="card">
+                    <ul>
+                        <li>Relatório: <code>target/site/jacoco/index.html</code>.</li>
+                        <li>Bootstrap e dados dev são excluídos da meta.</li>
+                        <li>JaCoCo mede bytecode Java, não o JavaScript.</li>
+                        <li>100% não garante testes úteis.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Páginas estáticas">
+        <div class="slide-content">
+            <h2>Spring Boot também serve arquivos estáticos</h2>
+            <div class="grid-2">
+                <div class="browser">
+                    <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                    <div class="browser-body">
+                        <p style="font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:#176b56;font-weight:800">Paradigmas de Programação</p>
+                        <h3>Linguagens, objetos e documentos.</h3>
+                        <div class="mini-links"><div class="mini-link">CRUD de linguagens →</div><div class="mini-link">Documentação →</div></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <p class="code-title">src/main/resources/static/</p>
+                    <ul>
+                        <li><code>index.html</code> vira automaticamente a rota <code>/</code>.</li>
+                        <li><code>crud.html</code> fica disponível em <code>/crud.html</code>.</li>
+                        <li>Não foi necessário criar Controller para arquivos estáticos.</li>
+                        <li>CSS e JavaScript estão embutidos: não há build de frontend.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Páginas estáticas">
+        <div class="slide-content">
+            <h2>CRUD com JavaScript puro</h2>
+            <div class="grid-2">
+                <pre><code><span class="kw">const</span> API_URL = <span class="str">"/api/linguagens"</span>;
+
+<span class="kw">async function</span> requisitar(caminho = <span class="str">""</span>, opcoes = {}) {
+    <span class="kw">const</span> resposta = <span class="kw">await</span> fetch(
+        `${API_URL}${caminho}`,
+        {
+            ...opcoes,
+            headers: {<span class="str">"Content-Type"</span>: <span class="str">"application/json"</span>}
+        });
+
+    <span class="kw">if</span> (!resposta.ok) {
+        <span class="kw">throw await</span> resposta.json();
+    }
+    <span class="kw">return</span> resposta.status === 204
+        ? <span class="kw">null</span> : resposta.json();
+}</code></pre>
+                <div class="card">
+                    <h3>Operações</h3>
+                    <ul>
+                        <li>GET lista e GET detalhe para edição.</li>
+                        <li>POST quando o campo ID oculto está vazio.</li>
+                        <li>PUT quando estamos editando.</li>
+                        <li>DELETE após confirmação do usuário.</li>
+                        <li><code>fieldErrors</code> aparece junto aos inputs.</li>
+                        <li><code>textContent</code> evita interpretar dados como HTML.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Páginas estáticas">
+        <div class="slide-content">
+            <h2>O navegador é outro cliente da API</h2>
+            <div class="flow">
+                <div class="flow-node"><strong>Formulário</strong><small>evento submit</small></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>Objeto JS</strong><small>payload</small></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>JSON</strong><small>JSON.stringify</small></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>Request DTO</strong><small>Jackson</small></div><div class="arrow">→</div>
+                <div class="flow-node"><strong>Service</strong><small>caso de uso</small></div>
+            </div>
+            <div class="grid-2" style="margin-top:28px">
+                <div class="card"><h3>Sem template do servidor</h3><p>Spring não monta a tela. Ele entrega o arquivo; o JavaScript chama a API.</p></div>
+                <div class="card"><h3>Mesma origem</h3><p>Página e API usam <code>localhost:8080</code>; por isso não precisamos configurar CORS.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Observações">
+        <div class="slide-content">
+            <h2>Escolhas conscientes do exemplo</h2>
+            <div class="grid-3">
+                <div class="card"><h3>Simples, não simplista</h3><p>Há camadas e DTOs, mas não criamos interfaces Service/Impl, CQRS ou arquitetura hexagonal.</p></div>
+                <div class="card"><h3>Records para contratos</h3><p>DTOs são imutáveis e concisos; Model permanece uma classe mutável de persistência.</p></div>
+                <div class="card"><h3>Injeção por construtor</h3><p>Dependências obrigatórias ficam explícitas e fáceis de substituir nos testes.</p></div>
+                <div class="card"><h3>Datas didáticas</h3><p>Algumas linguagens não têm uma única data oficial inequívoca.</p></div>
+                <div class="card"><h3>Sem segurança</h3><p>Autenticação e autorização estão fora do escopo inicial.</p></div>
+                <div class="card"><h3>Sem regra inventada</h3><p>Validamos presença, mas não restringimos artificialmente períodos históricos.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Observações">
+        <div class="slide-content">
+            <h2>Limitações do ambiente local</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h3>MongoDB 8 × kernel Linux</h3>
+                    <p>O host usado no desenvolvimento possui kernel <code>7.0.0-28</code>, incompatível com MongoDB 8.x por uma questão conhecida do TCMalloc.</p>
+                    <pre><code>MONGO_VERSION=7.0 docker compose up -d</code></pre>
+                    <p class="muted">O Compose permaneceu configurado para 8.0; a variável permite o contorno local.</p>
+                </div>
+                <div class="card">
+                    <h3>Mongo Express</h3>
+                    <p>A imagem está descontinuada pelos mantenedores. Foi mantida pela simplicidade em sala de aula.</p>
+                    <p><strong>Alternativas:</strong> MongoDB Compass ou DbGate.</p>
+                    <div class="callout"><strong>Uso recomendado:</strong> somente estudo e desenvolvimento local.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Observações">
+        <div class="slide-content">
+            <h2>O que ainda pode evoluir?</h2>
+            <div class="grid-4">
+                <div class="card"><h3>Consultas</h3><p>Paginação, ordenação, busca por nome e filtros.</p></div>
+                <div class="card"><h3>Contrato</h3><p>PATCH, versionamento da API e duplicidade.</p></div>
+                <div class="card"><h3>Produção</h3><p>Autenticação, autorização, métricas e observabilidade.</p></div>
+                <div class="card"><h3>Entrega</h3><p>Integração contínua, GitHub Actions e auditoria.</p></div>
+            </div>
+            <p class="lead" style="margin-top:28px">O <code>TODO.md</code> registra possibilidades sem antecipar complexidade.</p>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Demonstração">
+        <div class="slide-content">
+            <h2>Roteiro de demonstração ao vivo</h2>
+            <div class="grid-2">
+                <pre><code><span class="com"># 1. Infraestrutura</span>
+MONGO_VERSION=7.0 docker compose up -d
+
+<span class="com"># 2. Aplicação + dados de exemplo</span>
+SPRING_PROFILES_ACTIVE=dev ./mvnw spring-boot:run
+
+<span class="com"># 3. Abrir no navegador</span>
+http://localhost:8080/
+http://localhost:8080/crud.html
+http://localhost:8080/docs
+
+<span class="com"># 4. Encerrar sem apagar o volume</span>
+docker compose down</code></pre>
+                <div class="card">
+                    <ol>
+                        <li>Mostrar os cinco registros iniciais.</li>
+                        <li>Criar uma linguagem pelo CRUD.</li>
+                        <li>Ver o documento no Mongo Express.</li>
+                        <li>Atualizar e observar que o ID permanece.</li>
+                        <li>Forçar validação com campos vazios.</li>
+                        <li>Excluir e verificar o status 204.</li>
+                        <li>Executar <code>./mvnw clean verify</code>.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Fechamento">
+        <div class="slide-content">
+            <h2>O que deve ficar desta aula?</h2>
+            <div class="grid-3">
+                <div class="card"><span class="card-number">CONTRATO</span><h3>DTO não é entidade</h3><p>A representação HTTP pode evoluir sem expor a persistência.</p></div>
+                <div class="card"><span class="card-number">RESPONSABILIDADE</span><h3>Camadas têm motivos</h3><p>Cada tipo de objeto responde a uma pergunta diferente.</p></div>
+                <div class="card"><span class="card-number">EVIDÊNCIA</span><h3>Teste é documentação executável</h3><p>Status, JSON, regras e integração são verificados automaticamente.</p></div>
+            </div>
+            <p class="lead" style="margin-top:32px">Código didático bom não mostra todas as técnicas possíveis — mostra claramente as técnicas que escolheu.</p>
+        </div>
+    </section>
+
+    <section class="slide" data-section="Fechamento">
+        <div class="slide-content" style="text-align:center">
+            <p class="eyebrow">AEP Mongo Java 2026</p>
+            <h1 style="margin-right:auto;margin-left:auto">Perguntas?</h1>
+            <p class="lead" style="margin-right:auto;margin-left:auto">Explore o código, mude um contrato, escreva o teste e observe o caminho completo.</p>
+            <div class="tag-row" style="justify-content:center">
+                <span class="tag">← → para navegar</span>
+                <span class="tag">F para tela cheia</span>
+                <span class="tag">Ctrl+P para PDF</span>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div class="keyboard-help"><span class="kbd">←</span> <span class="kbd">→</span> navegar · <span class="kbd">F</span> tela cheia · <span class="kbd">Home</span> início</div>
+<nav class="controls" aria-label="Controles da apresentação">
+    <button class="control-button" id="previous" type="button" aria-label="Slide anterior">←</button>
+    <span class="counter" id="counter" aria-live="polite">1 / 1</span>
+    <button class="control-button" id="next" type="button" aria-label="Próximo slide">→</button>
+    <button class="control-button" id="fullscreen" type="button" aria-label="Alternar tela cheia">⛶</button>
+</nav>
+<div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progress"></div></div>
+
+<script>
+    "use strict";
+
+    const slides = [...document.querySelectorAll(".slide")];
+    const counter = document.querySelector("#counter");
+    const progress = document.querySelector("#progress");
+    let current = Math.max(0, Math.min(slides.length - 1, Number(location.hash.slice(1) || 1) - 1));
+    let touchStartX = null;
+
+    function showSlide(index) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((slide, position) => {
+            slide.classList.toggle("active", position === current);
+            slide.setAttribute("aria-hidden", position === current ? "false" : "true");
+        });
+        counter.textContent = `${current + 1} / ${slides.length}`;
+        progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+        history.replaceState(null, "", `#${current + 1}`);
+        document.title = `${current + 1}/${slides.length} · AEP Mongo Java 2026`;
+    }
+
+    function nextSlide() {
+        showSlide(current + 1);
+    }
+
+    function previousSlide() {
+        showSlide(current - 1);
+    }
+
+    async function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+        } else {
+            await document.exitFullscreen();
+        }
+    }
+
+    document.querySelector("#next").addEventListener("click", nextSlide);
+    document.querySelector("#previous").addEventListener("click", previousSlide);
+    document.querySelector("#fullscreen").addEventListener("click", toggleFullscreen);
+
+    document.addEventListener("keydown", (event) => {
+        if (["ArrowRight", "PageDown", " "].includes(event.key)) {
+            event.preventDefault();
+            nextSlide();
+        } else if (["ArrowLeft", "PageUp"].includes(event.key)) {
+            event.preventDefault();
+            previousSlide();
+        } else if (event.key === "Home") {
+            showSlide(0);
+        } else if (event.key === "End") {
+            showSlide(slides.length - 1);
+        } else if (event.key.toLowerCase() === "f") {
+            toggleFullscreen();
+        }
+    });
+
+    document.addEventListener("touchstart", (event) => {
+        touchStartX = event.changedTouches[0].clientX;
+    }, {passive: true});
+
+    document.addEventListener("touchend", (event) => {
+        if (touchStartX === null) return;
+        const distance = event.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(distance) > 50) {
+            distance < 0 ? nextSlide() : previousSlide();
+        }
+        touchStartX = null;
+    }, {passive: true});
+
+    window.addEventListener("hashchange", () => {
+        const index = Number(location.hash.slice(1)) - 1;
+        if (Number.isInteger(index)) showSlide(index);
+    });
+
+    showSlide(current);
+</script>
+</body>
+</html>
