@@ -1,256 +1,308 @@
-# MongoDB com Docker Compose
+# API REST didática de linguagens de programação
 
-Este projeto demonstra como executar o MongoDB e uma interface visual web usando Docker Compose.
+Projeto da disciplina de Paradigmas de Programação para estudar orientação a objetos, separação de responsabilidades, contratos HTTP com DTOs, persistência NoSQL e testes automatizados.
 
-> Este ambiente foi preparado para estudo e desenvolvimento local. As credenciais são públicas e simples de propósito; não utilize esta configuração em produção.
+O primeiro domínio é um CRUD de linguagens de programação armazenadas no MongoDB. A aplicação é pequena de propósito: as conversões e responsabilidades ficam explícitas para que possam ser acompanhadas em sala de aula.
 
-## Documentação do projeto
+> As credenciais do ambiente local são públicas e simples intencionalmente. Não use esta configuração em produção e não registre credenciais reais no repositório.
 
-- `AGENTS.md`: contrato arquitetural e regras para agentes de IA;
-- `HARNESS.md`: comandos operacionais e critérios de conclusão;
-- `docs/architecture.md`: fluxo e responsabilidades das camadas;
-- `docs/decisions.md`: decisões arquiteturais registradas;
-- `docs/http-api.md`: contratos HTTP dos endpoints;
-- `TODO.md`: evoluções deliberadamente deixadas para etapas futuras;
-- `.agents/skills/`: procedimentos reutilizáveis de CRUD, testes e revisão arquitetural.
+## Stack
 
-## Tecnologias utilizadas
+- Java 21;
+- Spring Boot 3.5.16;
+- Spring Web;
+- Spring Data MongoDB;
+- Jakarta Validation;
+- Maven Wrapper;
+- JUnit 5, Mockito, MockMvc e Spring Boot Test;
+- Testcontainers com MongoDB;
+- JaCoCo;
+- MongoDB e Mongo Express via Docker Compose.
 
-- MongoDB 8.0
-- mongo-express 1.0.2
-- Docker Compose
-- Java 21
-- Spring Boot 3.5.16
-- Maven Wrapper
+## Arquitetura
 
-O `mongo-express` facilita o primeiro contato com o banco por oferecer uma interface visual acessível pelo navegador. Sua imagem oficial está descontinuada por falta de manutenção, portanto seu uso neste projeto deve ficar restrito ao ambiente didático local. Para projetos novos ou ambientes reais, considere MongoDB Compass ou DbGate.
+O fluxo principal de uma requisição é:
+
+```text
+JSON -> Controller -> Request DTO -> Service -> Repository -> MongoDB
+```
+
+O fluxo de resposta é:
+
+```text
+MongoDB -> Model -> Service -> Mapper -> Response DTO -> Controller -> JSON
+```
+
+- `Controller` trata HTTP e delega os casos de uso;
+- `DTO` define contratos específicos de entrada e saída;
+- `Mapper` converte explicitamente DTOs e documentos;
+- `Service` concentra os casos de uso e regras de negócio;
+- `Repository` cuida somente da persistência;
+- `Model` representa o documento MongoDB;
+- `Exception` padroniza falhas da API;
+- `Configuration` contém infraestrutura, como a carga de dados de desenvolvimento.
+
+Consulte também [docs/architecture.md](docs/architecture.md), [docs/decisions.md](docs/decisions.md) e [docs/http-api.md](docs/http-api.md).
 
 ## Pré-requisitos
 
-Antes de iniciar, instale:
+- Java 21;
+- Docker;
+- Docker Compose v2.
 
-- Docker Desktop, no Windows ou macOS; ou Docker Engine, no Linux;
-- Docker Compose v2, normalmente incluído nas instalações atuais do Docker.
-
-Confirme a instalação:
+Não é necessário instalar Maven: o projeto inclui o Maven Wrapper.
 
 ```bash
+java -version
 docker --version
 docker compose version
+./mvnw -version
 ```
 
-## Arquivos da configuração
+## Configuração do MongoDB
 
-O ambiente utiliza dois arquivos:
+O `compose.yaml` existente define:
 
-- `compose.yaml`: descreve os serviços, a rede e o volume;
-- `.env`: contém as versões, portas e credenciais locais usadas pelo Compose.
+| Serviço | Endereço local | Credenciais iniciais |
+|---|---|---|
+| MongoDB | `localhost:27018` | `root` / `Mongo` |
+| Mongo Express | `http://localhost:18081` | `cesumar` / `cesumar` |
 
-As credenciais estão fora do `compose.yaml`, mas permanecem no projeto porque não são segredos reais. Uma variável exportada no terminal tem precedência sobre o valor definido no `.env`.
+As portas não usam os padrões mais disputados na máquina: externamente são `27018` e `18081`; dentro da rede Docker, os serviços continuam usando `27017` e `8081`.
 
-## Variáveis disponíveis
-
-O arquivo `.env` contém os seguintes valores iniciais:
-
-```dotenv
-MONGO_ROOT_USERNAME=root
-MONGO_ROOT_PASSWORD=Mongo
-MONGO_PORT=27018
-MONGO_VERSION=8.0
-
-MONGO_EXPRESS_USERNAME=cesumar
-MONGO_EXPRESS_PASSWORD=cesumar
-MONGO_EXPRESS_PORT=18081
-MONGO_EXPRESS_VERSION=1.0.2-20-alpine3.19
-```
-
-Para substituir temporariamente um valor sem editar o arquivo, informe a variável antes do comando:
+O arquivo `.env` mantém os valores didáticos fora do Compose, mas eles também podem ser substituídos pelo ambiente. Por exemplo:
 
 ```bash
-MONGO_ROOT_PASSWORD=OutraSenha docker compose up -d
+MONGO_PORT=37018 MONGO_ROOT_PASSWORD=OutraSenha docker compose up -d
 ```
 
-No PowerShell, o equivalente é:
+No PowerShell:
 
 ```powershell
+$env:MONGO_PORT="37018"
 $env:MONGO_ROOT_PASSWORD="OutraSenha"
 docker compose up -d
 ```
 
-## Iniciando o ambiente
+Se alterar usuário, senha ou porta, ajuste também `SPRING_DATA_MONGODB_URI` ao iniciar a aplicação.
 
-Na raiz do projeto, execute:
+## Como subir a infraestrutura
 
 ```bash
 docker compose up -d
-```
-
-O parâmetro `-d` mantém os contêineres em execução em segundo plano.
-
-Verifique o estado dos serviços:
-
-```bash
 docker compose ps
 ```
 
-O MongoDB possui uma verificação de saúde. O `mongo-express` só é iniciado depois que o banco responde corretamente.
+O MongoDB possui healthcheck. O Mongo Express aguarda o banco ficar saudável antes de iniciar.
 
-## Acessando a interface web
-
-Abra no navegador:
-
-```text
-http://localhost:18081
-```
-
-Use as credenciais da interface:
-
-```text
-Usuário: cesumar
-Senha: cesumar
-```
-
-Essas credenciais protegem apenas o acesso ao `mongo-express`. O próprio MongoDB utiliza o usuário `root` e a senha `Mongo`.
-
-## Conectando diretamente ao MongoDB
-
-A partir da máquina local, utilize:
-
-```text
-mongodb://root:Mongo@localhost:27018/?authSource=admin
-```
-
-A porta externa é `27018`, enquanto o MongoDB continua usando a porta padrão `27017` dentro da rede Docker. Da mesma forma, o `mongo-express` é publicado na porta externa `18081`, mas utiliza `8081` dentro do contêiner. Somente as portas externas ocupam portas da máquina.
-
-A aplicação utiliza o banco `linguagens` e, por padrão, conecta-se ao mesmo ambiente local:
-
-```text
-mongodb://root:Mongo@localhost:27018/linguagens?authSource=admin
-```
-
-Para apontar a aplicação para outra instância sem alterar o projeto, defina `SPRING_DATA_MONGODB_URI`:
-
-```bash
-SPRING_DATA_MONGODB_URI='mongodb://usuario:senha@servidor:27017/banco?authSource=admin' ./mvnw spring-boot:run
-```
-
-Não registre credenciais reais no repositório.
-
-Para carregar os exemplos didáticos Java, Python, C, Rust e JavaScript, inicie a aplicação com o profile `dev`:
-
-```bash
-SPRING_PROFILES_ACTIVE=dev ./mvnw spring-boot:run
-```
-
-A carga é idempotente: registros existentes com os mesmos identificadores não são duplicados nem sobrescritos. As datas dos exemplos são aproximações didáticas quando não há uma data oficial única.
-
-Para abrir o shell do MongoDB pelo próprio contêiner:
-
-```bash
-docker compose exec mongo mongosh \
-  --username root \
-  --password Mongo \
-  --authenticationDatabase admin
-```
-
-## Persistência dos dados
-
-Os dados são armazenados no volume nomeado `mongo-data`, montado em `/data/db`, que é o diretório oficial de dados da imagem do MongoDB.
-
-Recriar um contêiner não apaga esse volume. Por exemplo, este comando preserva os bancos:
-
-```bash
-docker compose down
-```
-
-Para remover também os dados persistidos e começar com uma instância vazia:
-
-```bash
-docker compose down --volumes
-```
-
-> Atenção: o último comando apaga todos os bancos armazenados neste ambiente local.
-
-## Consultando os logs
-
-Para acompanhar todos os serviços:
+Para acompanhar os logs:
 
 ```bash
 docker compose logs -f
 ```
 
-Para acompanhar somente o MongoDB:
+Para encerrar os contêineres preservando os dados:
 
 ```bash
-docker compose logs -f mongo
+docker compose down
 ```
 
-Use `Ctrl+C` para sair da visualização sem desligar os contêineres.
+Os dados ficam no volume nomeado `mongo-data`. O comando abaixo também remove esse volume e apaga os bancos locais:
 
-## Cobertura de testes
+```bash
+docker compose down --volumes
+```
 
-Execute todos os testes, incluindo Testcontainers, e valide a meta mínima de 70% de linhas:
+### Compatibilidade do MongoDB 8 no Linux
+
+MongoDB 8.x não inicia em hosts Linux com kernel entre 6.19 e 7.0.13 devido a uma incompatibilidade conhecida com TCMalloc. Atualizar para kernel 7.0.14 ou posterior permite manter a versão padrão do Compose.
+
+Como alternativa temporária para desenvolvimento nesse intervalo de versões, substitua somente a variável ao iniciar os serviços:
+
+```bash
+MONGO_VERSION=7.0 docker compose up -d
+```
+
+O `compose.yaml` permanece inalterado.
+
+## Como executar a aplicação
+
+Com a infraestrutura ativa:
+
+```bash
+./mvnw spring-boot:run
+```
+
+A URI padrão é:
+
+```text
+mongodb://root:Mongo@localhost:27018/linguagens?authSource=admin
+```
+
+Para usar outra instância sem alterar o projeto:
+
+```bash
+SPRING_DATA_MONGODB_URI='mongodb://usuario:senha@servidor:27017/banco?authSource=admin' \
+  ./mvnw spring-boot:run
+```
+
+Para carregar Java, Python, C, Rust e JavaScript no ambiente de desenvolvimento:
+
+```bash
+SPRING_PROFILES_ACTIVE=dev ./mvnw spring-boot:run
+```
+
+A carga é idempotente: reiniciar a aplicação não duplica nem sobrescreve os registros existentes com os mesmos identificadores. As datas são aproximações didáticas quando não há uma data oficial única.
+
+Verifique a aplicação:
+
+```bash
+curl -i http://localhost:8080/api/linguagens
+```
+
+## Endpoints
+
+| Método | Endpoint | Entrada | Sucesso |
+|---|---|---|---|
+| `GET` | `/api/linguagens` | — | `200` com lista resumida |
+| `GET` | `/api/linguagens/{id}` | — | `200` com representação completa |
+| `POST` | `/api/linguagens` | `LinguagemCreateRequest` | `201`, `Location` e representação completa |
+| `PUT` | `/api/linguagens/{id}` | `LinguagemUpdateRequest` | `200` com representação completa |
+| `DELETE` | `/api/linguagens/{id}` | — | `204` sem corpo |
+
+Consultas, atualizações e exclusões de identificadores inexistentes retornam `404`. Entradas inválidas retornam `400` com uma representação de erro consistente.
+
+## Exemplos com curl
+
+Listar linguagens, usando a projeção com apenas `id` e `nome`:
+
+```bash
+curl -i http://localhost:8080/api/linguagens
+```
+
+Consultar uma linguagem:
+
+```bash
+curl -i http://localhost:8080/api/linguagens/java
+```
+
+Criar uma linguagem — o corpo não possui `id`:
+
+```bash
+curl -i -X POST http://localhost:8080/api/linguagens \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "nome": "Kotlin",
+    "dataCriacao": "2011-07-19",
+    "autor": "JetBrains"
+  }'
+```
+
+Atualizar uma linguagem — o identificador vem exclusivamente da URL:
+
+```bash
+curl -i -X PUT http://localhost:8080/api/linguagens/ID_RETORNADO \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "nome": "Kotlin",
+    "dataCriacao": "2011-07-19",
+    "autor": "JetBrains e comunidade"
+  }'
+```
+
+Excluir uma linguagem:
+
+```bash
+curl -i -X DELETE http://localhost:8080/api/linguagens/ID_RETORNADO
+```
+
+## Como executar os testes
+
+Testes unitários de Service e testes de Controller, sem depender de MongoDB:
+
+```bash
+./mvnw clean test
+```
+
+Somente testes unitários de Service:
+
+```bash
+./mvnw -Dtest=LinguagemServiceTest test
+```
+
+Somente testes de Controller:
+
+```bash
+./mvnw -Dtest=LinguagemControllerTest test
+```
+
+Somente o teste de integração:
+
+```bash
+./mvnw -Dtest=LinguagemApiIT test
+```
+
+Todos os testes e verificações, incluindo a integração registrada no Failsafe:
 
 ```bash
 ./mvnw clean verify
 ```
 
-Abra o relatório HTML gerado em:
+O teste de integração cria seu próprio MongoDB 7.0 com Testcontainers. Ele não depende do MongoDB instalado na máquina, do Compose de desenvolvimento, de dados anteriores ou da ordem dos testes.
+
+## Cobertura
+
+`verify` também gera o relatório JaCoCo e exige pelo menos 70% de cobertura de linhas no código relevante:
+
+```bash
+./mvnw clean verify
+```
+
+Abra o relatório em:
 
 ```text
 target/site/jacoco/index.html
 ```
 
-A classe de bootstrap e a configuração exclusiva de dados de desenvolvimento não entram na meta pedagógica. A exclusão evita que código de infraestrutura trivial distorça a cobertura dos comportamentos da API.
+Na validação inicial, 81 de 84 linhas relevantes foram cobertas: **96,43%**. A classe de bootstrap e a configuração exclusiva de dados de desenvolvimento são excluídas para não distorcer a métrica pedagógica.
 
-## Encerrando o ambiente
+## Mongo Express
 
-Para interromper e remover os contêineres e a rede, preservando os dados:
+A interface visual está disponível em [http://localhost:18081](http://localhost:18081), com usuário `cesumar` e senha `cesumar`.
 
-```bash
-docker compose down
-```
+O Mongo Express foi mantido por ser simples para a demonstração em sala. A imagem oficial está descontinuada por falta de manutenção; por isso, seu uso deve ficar restrito ao ambiente didático local. Para projetos novos, ferramentas como MongoDB Compass ou DbGate são alternativas mais atuais.
 
-## Detalhes importantes do Compose
+## Documentação para continuidade
 
-- As imagens têm versões definidas, evitando mudanças inesperadas da tag `latest`.
-- As portas são vinculadas a `127.0.0.1`, impedindo acesso direto por outras máquinas da rede.
-- Os serviços comunicam-se pela rede interna `mongo-compose-network`.
-- Dentro dessa rede, o nome `mongo` funciona como endereço do servidor de banco de dados.
-- `restart: unless-stopped` reinicia os serviços após falhas, exceto quando eles forem interrompidos manualmente.
-- O volume nomeado funciona da mesma forma em Windows, Linux e macOS.
+- `AGENTS.md`: contrato arquitetural e regras para agentes de IA;
+- `HARNESS.md`: comandos operacionais e Definition of Done;
+- `docs/architecture.md`: fluxo e responsabilidades das camadas;
+- `docs/decisions.md`: decisões arquiteturais em pequenas ADRs;
+- `docs/http-api.md`: contratos HTTP detalhados;
+- `TODO.md`: evoluções deixadas deliberadamente para o futuro;
+- `.agents/skills/`: procedimentos locais para CRUD, testes e revisão arquitetural.
 
 ## Problemas comuns
 
-### A porta já está em uso
+### Porta já utilizada
 
-Altere `MONGO_PORT` ou `MONGO_EXPRESS_PORT` no `.env` e recrie os serviços:
+Altere `MONGO_PORT` ou `MONGO_EXPRESS_PORT` no `.env` ou apenas para um comando. Recrie os serviços e ajuste a URI da aplicação se a porta do MongoDB mudou.
 
-```bash
-docker compose down
-docker compose up -d
-```
+### Troca de usuário ou senha não aplicada
 
-### A troca de usuário ou senha não funcionou
-
-As variáveis `MONGO_INITDB_ROOT_USERNAME` e `MONGO_INITDB_ROOT_PASSWORD` são aplicadas somente na primeira inicialização de um volume vazio.
-
-Em um ambiente descartável de estudo, remova o volume e inicialize novamente:
+As variáveis `MONGO_INITDB_ROOT_USERNAME` e `MONGO_INITDB_ROOT_PASSWORD` só são aplicadas ao inicializar um volume vazio. Em um ambiente descartável de estudo, remova o volume e suba os serviços novamente. Isso apaga os dados existentes:
 
 ```bash
 docker compose down --volumes
 docker compose up -d
 ```
 
-Esse procedimento apaga os dados existentes.
+### Mongo Express não abriu imediatamente
 
-### O mongo-express não abriu imediatamente
-
-Confira o estado e os logs:
+Na primeira execução, o Docker pode precisar baixar as imagens. Verifique:
 
 ```bash
 docker compose ps
+docker compose logs mongo
 docker compose logs mongo-express
 ```
-
-Na primeira execução, o Docker também precisa baixar as imagens, o que pode levar alguns minutos.

@@ -28,25 +28,25 @@ Compilar sem executar testes:
 ./mvnw clean compile -DskipTests
 ```
 
-Executar todos os testes:
+Executar testes unitários e de Controller:
 
 ```bash
 ./mvnw clean test
 ```
 
-Executar somente os testes unitários e de Controller, excluindo testes nomeados com o sufixo `IT`:
+Executar somente os testes unitários de Service:
 
 ```bash
-./mvnw test -Dtest='!*IT'
+./mvnw -Dtest=LinguagemServiceTest test
 ```
 
 Executar somente os testes de integração:
 
 ```bash
-./mvnw test -Dtest='*IT'
+./mvnw -Dtest=LinguagemApiIT test
 ```
 
-Executar verificações e gerar o relatório JaCoCo:
+Executar todos os testes, incluindo a integração registrada no Failsafe, e gerar o relatório JaCoCo:
 
 ```bash
 ./mvnw clean verify
