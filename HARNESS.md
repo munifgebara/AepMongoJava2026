@@ -78,6 +78,8 @@ Parar os contêineres preservando os dados:
 docker compose down
 ```
 
+O MongoDB persiste no volume Docker `aepmongojava2026_mongo-data`, exclusivo deste projeto e montado em `/data/db`. O volume nomeado funciona tanto no Linux quanto no Docker Desktop do Windows e não compartilha arquivos com um MongoDB instalado no host. Use `docker volume inspect aepmongojava2026_mongo-data` para consultar sua localização no daemon Docker.
+
 Verificar a aplicação depois de iniciada:
 
 ```bash

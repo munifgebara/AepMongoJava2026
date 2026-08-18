@@ -109,3 +109,13 @@
 **Alternativas consideradas:** exigir atualização do kernel, manter 8.0 e documentar um comando alternativo ou usar uma tag sem versão fixa.
 
 **Consequências:** `docker compose up -d` funciona no ambiente validado sem parâmetros adicionais. Máquinas compatíveis ainda podem selecionar outra versão com `MONGO_VERSION`, e a tag `latest` continua evitada.
+
+## ADR-012 — Volume de dados exclusivo do projeto
+
+**Decisão:** montar o volume Docker nomeado `aepmongojava2026_mongo-data` em `/data/db`, permitindo substituir seu nome com `MONGO_DATA_VOLUME`.
+
+**Motivação:** manter os dados isolados de qualquer MongoDB instalado no host e oferecer o mesmo Compose no Linux e no Docker Desktop do Windows. A imagem oficial do MongoDB recomenda volumes nomeados no Windows, pois bind mounts do host podem ser incompatíveis com seus arquivos mapeados em memória.
+
+**Alternativas consideradas:** bind mount em uma pasta do repositório e caminhos absolutos específicos de cada sistema operacional.
+
+**Consequências:** o Docker gerencia a localização física dos dados; `docker volume inspect aepmongojava2026_mongo-data` permite consultá-la. O volume não é removido por `docker compose down`, mas é apagado por `docker compose down --volumes`.

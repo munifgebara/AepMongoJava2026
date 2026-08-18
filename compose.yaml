@@ -13,7 +13,7 @@ services:
       # Usa 27018 na máquina para evitar conflito com instalações locais na porta padrão 27017.
       - "127.0.0.1:${MONGO_PORT:-27018}:27017"
     volumes:
-      # Volume gerenciado pelo Docker e montado no diretório de dados oficial da imagem.
+      # Volume exclusivo do projeto e compatível com Docker no Linux e no Windows.
       - mongo-data:/data/db
     healthcheck:
       test:
@@ -51,8 +51,9 @@ services:
       - mongo-compose-network
 
 volumes:
-  # Os dados permanecem entre recriações dos contêineres.
   mongo-data:
+    # Nome explícito evita compartilhar dados com outro projeto ou MongoDB do host.
+    name: ${MONGO_DATA_VOLUME:-aepmongojava2026_mongo-data}
 
 networks:
   mongo-compose-network:

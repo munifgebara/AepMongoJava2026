@@ -87,6 +87,18 @@ docker compose up -d
 
 Se alterar usuário, senha ou porta, ajuste também `SPRING_DATA_MONGODB_URI` ao iniciar a aplicação.
 
+Os arquivos do banco ficam no volume Docker `aepmongojava2026_mongo-data`, criado exclusivamente para este projeto e montado em `/data/db` no contêiner. Ele não usa nem conflita com a pasta de uma instalação de MongoDB existente na máquina.
+
+O volume nomeado funciona tanto no Linux quanto no Docker Desktop do Windows. A [imagem oficial do MongoDB](https://hub.docker.com/_/mongo/) alerta que montar `/data/db` diretamente em uma pasta compartilhada do Windows pode ser incompatível com os arquivos mapeados em memória utilizados pelo banco; por isso, o projeto deixa o Docker gerenciar a localização física.
+
+Para descobrir a localização mantida pelo daemon Docker:
+
+```bash
+docker volume inspect aepmongojava2026_mongo-data
+```
+
+No Linux, normalmente será algo como `/var/lib/docker/volumes/aepmongojava2026_mongo-data/_data`. No Windows com Docker Desktop, o volume fica dentro da máquina virtual do Docker, e não em uma pasta usada por um MongoDB instalado no Windows.
+
 ## Como subir a infraestrutura
 
 ```bash
@@ -108,11 +120,7 @@ Para encerrar os contêineres preservando os dados:
 docker compose down
 ```
 
-Os dados ficam no volume nomeado `mongo-data`. O comando abaixo também remove esse volume e apaga os bancos locais:
-
-```bash
-docker compose down --volumes
-```
+Os dados permanecem no volume `aepmongojava2026_mongo-data` depois desse comando. Para reiniciar o banco do zero em um ambiente descartável, use `docker compose down --volumes`; isso remove somente os volumes declarados para este projeto e apaga seus bancos locais.
 
 ### Versão do MongoDB e compatibilidade no Linux
 
@@ -321,7 +329,7 @@ Altere `MONGO_PORT` ou `MONGO_EXPRESS_PORT` no `.env` ou apenas para um comando.
 
 ### Troca de usuário ou senha não aplicada
 
-As variáveis `MONGO_INITDB_ROOT_USERNAME` e `MONGO_INITDB_ROOT_PASSWORD` só são aplicadas ao inicializar um volume vazio. Em um ambiente descartável de estudo, remova o volume e suba os serviços novamente. Isso apaga os dados existentes:
+As variáveis `MONGO_INITDB_ROOT_USERNAME` e `MONGO_INITDB_ROOT_PASSWORD` só são aplicadas ao inicializar um volume vazio. Em um ambiente descartável de estudo, remova o volume e suba os serviços novamente. Isso apaga os bancos existentes:
 
 ```bash
 docker compose down --volumes
