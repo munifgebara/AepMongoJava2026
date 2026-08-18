@@ -1,0 +1,4 @@
+interface:
+  display_name: "Testes da API"
+  short_description: "Orienta testes unitários e de integração"
+  default_prompt: "Use $testing para criar testes reproduzíveis para esta API."

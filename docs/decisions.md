@@ -1,0 +1,81 @@
+# Decisões arquiteturais
+
+## ADR-001 — Java 21
+
+**Decisão:** utilizar Java 21.
+
+**Motivação:** trabalhar com uma versão LTS moderna e tornar recursos atuais da linguagem, como records, disponíveis aos exemplos.
+
+**Alternativas consideradas:** Java 17 e versões não LTS.
+
+**Consequências:** o ambiente de desenvolvimento e execução precisa disponibilizar JDK 21.
+
+## ADR-002 — Spring Boot
+
+**Decisão:** utilizar Spring Boot como base da API REST.
+
+**Motivação:** integrar servidor HTTP, validação, persistência e testes com configuração pequena e convenções amplamente adotadas.
+
+**Alternativas consideradas:** configurar Spring Framework manualmente ou usar outro framework web.
+
+**Consequências:** versões das bibliotecas principais serão gerenciadas pelo Spring Boot e o projeto seguirá suas convenções.
+
+## ADR-003 — MongoDB
+
+**Decisão:** persistir linguagens de programação em MongoDB.
+
+**Motivação:** demonstrar persistência NoSQL orientada a documentos na disciplina.
+
+**Alternativas consideradas:** banco relacional e armazenamento somente em memória.
+
+**Consequências:** a aplicação usará Spring Data MongoDB e o desenvolvimento local aproveitará o Compose existente.
+
+## ADR-004 — Camadas Controller, Service e Repository
+
+**Decisão:** separar protocolo HTTP, casos de uso e persistência em camadas explícitas.
+
+**Motivação:** tornar responsabilidade, composição e injeção de dependência observáveis no código didático.
+
+**Alternativas consideradas:** Controller acessando Repository diretamente e arquiteturas com mais abstrações.
+
+**Consequências:** Controllers permanecem pequenos e Services concentram os casos de uso, sem criar interfaces artificiais.
+
+## ADR-005 — DTOs específicos por operação
+
+**Decisão:** criar contratos distintos para criação, atualização, resposta completa e resumo.
+
+**Motivação:** DTOs representam casos de uso e devem evoluir independentemente da persistência e uns dos outros.
+
+**Alternativas consideradas:** um DTO universal e exposição direta do documento MongoDB.
+
+**Consequências:** há mais tipos pequenos, mas os contratos HTTP ficam explícitos e protegidos contra alterações acidentais.
+
+## ADR-006 — Mapping explícito
+
+**Decisão:** implementar conversões em classes Mapper com Java explícito.
+
+**Motivação:** permitir que estudantes visualizem a passagem de dados entre contratos e persistência.
+
+**Alternativas consideradas:** MapStruct, ModelMapper e conversões espalhadas por Controllers e Services.
+
+**Consequências:** existe algum código de conversão manual, centralizado e fácil de depurar.
+
+## ADR-007 — Testcontainers
+
+**Decisão:** executar testes de integração contra MongoDB real criado por Testcontainers.
+
+**Motivação:** validar comportamento real do driver e do banco sem depender da máquina ou do Compose de desenvolvimento.
+
+**Alternativas consideradas:** MongoDB local, banco compartilhado e implementações fake embarcadas.
+
+**Consequências:** testes de integração são reproduzíveis, mas exigem Docker disponível.
+
+## ADR-008 — Java Records para DTOs
+
+**Decisão:** utilizar records quando forem adequados aos DTOs imutáveis.
+
+**Motivação:** expressar contratos de dados concisos e imutáveis com recurso nativo do Java 21.
+
+**Alternativas consideradas:** classes mutáveis com getters e setters e Lombok.
+
+**Consequências:** DTOs têm pouca cerimônia e não dependem de geração de código externa.

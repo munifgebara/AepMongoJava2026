@@ -1,0 +1,4 @@
+interface:
+  display_name: "Revisão de Arquitetura"
+  short_description: "Revisa camadas, contratos e qualidade da API"
+  default_prompt: "Use $architecture-review para revisar uma funcionalidade antes de concluí-la."

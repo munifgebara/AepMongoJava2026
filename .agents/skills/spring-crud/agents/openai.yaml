@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spring CRUD"
+  short_description: "Implementa CRUDs Spring conforme a arquitetura"
+  default_prompt: "Use $spring-crud para implementar um recurso CRUD consistente com este projeto."

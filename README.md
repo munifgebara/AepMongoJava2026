@@ -4,6 +4,15 @@ Este projeto demonstra como executar o MongoDB e uma interface visual web usando
 
 > Este ambiente foi preparado para estudo e desenvolvimento local. As credenciais são públicas e simples de propósito; não utilize esta configuração em produção.
 
+## Documentação do projeto
+
+- `AGENTS.md`: contrato arquitetural e regras para agentes de IA;
+- `HARNESS.md`: comandos operacionais e critérios de conclusão;
+- `docs/architecture.md`: fluxo e responsabilidades das camadas;
+- `docs/decisions.md`: decisões arquiteturais registradas;
+- `TODO.md`: evoluções deliberadamente deixadas para etapas futuras;
+- `.agents/skills/`: procedimentos reutilizáveis de CRUD, testes e revisão arquitetural.
+
 ## Tecnologias utilizadas
 
 - MongoDB 8.0
