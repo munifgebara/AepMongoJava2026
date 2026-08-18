@@ -8,7 +8,6 @@ Estas possibilidades estão deliberadamente fora do escopo inicial:
 - filtros;
 - validação de duplicidade;
 - `PATCH`;
-- OpenAPI / Swagger;
 - autenticação;
 - autorização;
 - métricas;

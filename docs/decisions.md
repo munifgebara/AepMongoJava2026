@@ -79,3 +79,13 @@
 **Alternativas consideradas:** classes mutáveis com getters e setters e Lombok.
 
 **Consequências:** DTOs têm pouca cerimônia e não dependem de geração de código externa.
+
+## ADR-009 — Springdoc OpenAPI
+
+**Decisão:** gerar o contrato OpenAPI e a documentação visual com Springdoc OpenAPI 2.9.0, expondo a interface em `/docs`.
+
+**Motivação:** oferecer uma página web interativa que permaneça sincronizada com os Controllers, DTOs e validações da aplicação.
+
+**Alternativas consideradas:** manter somente exemplos manuais no README, gerar documentação estática com Spring REST Docs ou configurar Swagger UI manualmente.
+
+**Consequências:** a aplicação passa a expor a interface visual em `/docs` e o contrato JSON em `/v3/api-docs`, com uma dependência adicional compatível com Spring Boot 3.5.16.

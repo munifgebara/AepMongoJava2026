@@ -13,6 +13,7 @@ O primeiro domínio é uma API REST CRUD de linguagens de programação armazena
 - Spring Web
 - Spring Data MongoDB
 - Jakarta Validation
+- Springdoc OpenAPI
 - Maven
 - JUnit 5
 - Mockito

@@ -13,6 +13,7 @@ O primeiro domínio é um CRUD de linguagens de programação armazenadas no Mon
 - Spring Web;
 - Spring Data MongoDB;
 - Jakarta Validation;
+- Springdoc OpenAPI e Swagger UI;
 - Maven Wrapper;
 - JUnit 5, Mockito, MockMvc e Spring Boot Test;
 - Testcontainers com MongoDB;
@@ -159,6 +160,22 @@ Verifique a aplicação:
 ```bash
 curl -i http://localhost:8080/api/linguagens
 ```
+
+## Documentação interativa da API
+
+Com a aplicação em execução, abra:
+
+```text
+http://localhost:8080/docs
+```
+
+A página permite visualizar os endpoints, os schemas dos DTOs e executar requisições pela interface web. O contrato OpenAPI em JSON também está disponível em:
+
+```text
+http://localhost:8080/v3/api-docs
+```
+
+A documentação é gerada a partir dos Controllers, DTOs e validações da aplicação, reduzindo o risco de divergência entre o código e o contrato apresentado.
 
 ## Endpoints
 

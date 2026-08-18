@@ -82,7 +82,10 @@ Verificar a aplicação depois de iniciada:
 
 ```bash
 curl -i http://localhost:8080/api/linguagens
+curl -i http://localhost:8080/v3/api-docs
 ```
+
+A documentação visual fica disponível em `http://localhost:8080/docs`.
 
 ## Testes de integração
 

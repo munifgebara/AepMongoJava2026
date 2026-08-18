@@ -2,6 +2,8 @@
 
 Base path: `/api/linguagens`.
 
+A documentação visual e interativa está disponível em `/docs`. O contrato OpenAPI em JSON é exposto em `/v3/api-docs`.
+
 | Método | Caminho | Entrada | Resposta de sucesso | Recurso ausente |
 |---|---|---|---|---|
 | `GET` | `/api/linguagens` | — | `200` com lista de `LinguagemSummaryResponse` | — |
