@@ -24,6 +24,16 @@ POST e PUT recebem contratos independentes com a mesma forma inicial:
 
 O campo `id` não pertence ao corpo. Na atualização, ele é obtido exclusivamente do path.
 
+### Validação
+
+Nos contratos de criação e atualização:
+
+- `nome` é obrigatório e não aceita texto formado somente por espaços;
+- `autor` é obrigatório e não aceita texto formado somente por espaços;
+- `dataCriacao` é obrigatória e deve usar o formato ISO `yyyy-MM-dd`.
+
+Violações retornam `400 Bad Request`. Não há restrição artificial sobre o período histórico da linguagem.
+
 ## Listagem resumida
 
 ```json
