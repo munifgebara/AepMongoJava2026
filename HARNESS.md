@@ -18,7 +18,7 @@ docker --version
 docker compose version
 ```
 
-O repositório ainda não possui Maven Wrapper. Enquanto ele não for adicionado, substitua `./mvnw` por `mvn` nos comandos abaixo.
+O Maven Wrapper acompanha o repositório. Prefira `./mvnw` para usar a mesma versão do Maven em todas as máquinas.
 
 ## Comandos importantes
 

@@ -19,7 +19,8 @@ Este projeto demonstra como executar o MongoDB e uma interface visual web usando
 - mongo-express 1.0.2
 - Docker Compose
 - Java 21
-- Maven
+- Spring Boot 3.5.16
+- Maven Wrapper
 
 O `mongo-express` facilita o primeiro contato com o banco por oferecer uma interface visual acessível pelo navegador. Sua imagem oficial está descontinuada por falta de manutenção, portanto seu uso neste projeto deve ficar restrito ao ambiente didático local. Para projetos novos ou ambientes reais, considere MongoDB Compass ou DbGate.
 

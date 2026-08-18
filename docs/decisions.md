@@ -12,13 +12,13 @@
 
 ## ADR-002 — Spring Boot
 
-**Decisão:** utilizar Spring Boot como base da API REST.
+**Decisão:** utilizar Spring Boot 3.5.16 como base da API REST.
 
 **Motivação:** integrar servidor HTTP, validação, persistência e testes com configuração pequena e convenções amplamente adotadas.
 
 **Alternativas consideradas:** configurar Spring Framework manualmente ou usar outro framework web.
 
-**Consequências:** versões das bibliotecas principais serão gerenciadas pelo Spring Boot e o projeto seguirá suas convenções.
+**Consequências:** versões das bibliotecas principais serão gerenciadas pelo Spring Boot e o projeto seguirá suas convenções. A linha 3.5 foi escolhida por ser estável, madura e compatível com Java 21, evitando uma migração didaticamente desnecessária para uma nova geração principal.
 
 ## ADR-003 — MongoDB
 
