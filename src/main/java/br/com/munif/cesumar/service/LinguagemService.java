@@ -1,7 +1,6 @@
 package br.com.munif.cesumar.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +8,7 @@ import br.com.munif.cesumar.dto.LinguagemCreateRequest;
 import br.com.munif.cesumar.dto.LinguagemResponse;
 import br.com.munif.cesumar.dto.LinguagemSummaryResponse;
 import br.com.munif.cesumar.dto.LinguagemUpdateRequest;
+import br.com.munif.cesumar.exception.LinguagemNotFoundException;
 import br.com.munif.cesumar.mapper.LinguagemMapper;
 import br.com.munif.cesumar.model.Linguagem;
 import br.com.munif.cesumar.repository.LinguagemRepository;
@@ -52,6 +52,6 @@ public class LinguagemService {
 
     private Linguagem buscarModelPorId(String id) {
         return repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Linguagem não encontrada: " + id));
+                .orElseThrow(() -> new LinguagemNotFoundException(id));
     }
 }
