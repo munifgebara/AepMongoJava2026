@@ -187,6 +187,22 @@ docker compose logs -f mongo
 
 Use `Ctrl+C` para sair da visualização sem desligar os contêineres.
 
+## Cobertura de testes
+
+Execute todos os testes, incluindo Testcontainers, e valide a meta mínima de 70% de linhas:
+
+```bash
+./mvnw clean verify
+```
+
+Abra o relatório HTML gerado em:
+
+```text
+target/site/jacoco/index.html
+```
+
+A classe de bootstrap e a configuração exclusiva de dados de desenvolvimento não entram na meta pedagógica. A exclusão evita que código de infraestrutura trivial distorça a cobertura dos comportamentos da API.
+
 ## Encerrando o ambiente
 
 Para interromper e remover os contêineres e a rede, preservando os dados:

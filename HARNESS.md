@@ -52,6 +52,8 @@ Executar verificações e gerar o relatório JaCoCo:
 ./mvnw clean verify
 ```
 
+O relatório fica em `target/site/jacoco/index.html`, e o build falha se o código relevante ficar abaixo de 70% de cobertura de linhas.
+
 Iniciar a aplicação:
 
 ```bash
