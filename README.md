@@ -10,6 +10,7 @@ Este projeto demonstra como executar o MongoDB e uma interface visual web usando
 - `HARNESS.md`: comandos operacionais e critérios de conclusão;
 - `docs/architecture.md`: fluxo e responsabilidades das camadas;
 - `docs/decisions.md`: decisões arquiteturais registradas;
+- `docs/http-api.md`: contratos HTTP dos endpoints;
 - `TODO.md`: evoluções deliberadamente deixadas para etapas futuras;
 - `.agents/skills/`: procedimentos reutilizáveis de CRUD, testes e revisão arquitetural.
 
