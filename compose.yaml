@@ -1,0 +1,58 @@
+# Ambiente local de desenvolvimento. Não use estas credenciais em produção.
+services:
+  mongo:
+    # MongoDB 8.0 é uma versão estável e evita as mudanças imprevisíveis da tag "latest".
+    image: mongo:${MONGO_VERSION:-8.0}
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    ports:
+      # Formato: porta_na_maquina:porta_no_container.
+      # Usa 27018 na máquina para evitar conflito com instalações locais na porta padrão 27017.
+      - "127.0.0.1:${MONGO_PORT:-27018}:27017"
+    volumes:
+      # Volume gerenciado pelo Docker e montado no diretório de dados oficial da imagem.
+      - mongo-data:/data/db
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh --quiet --host localhost --username \"$$MONGO_INITDB_ROOT_USERNAME\" --password \"$$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase admin --eval 'db.adminCommand({ ping: 1 }).ok' | grep 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - mongo-compose-network
+
+  mongo-express:
+    # Imagem descontinuada pelos mantenedores: adequada somente para estudo/desenvolvimento local.
+    image: mongo-express:${MONGO_EXPRESS_VERSION:-1.0.2-20-alpine3.19}
+    restart: unless-stopped
+    ports:
+      # Usa 18081 na máquina para evitar conflito com aplicações nas portas 8080 e 8081.
+      - "127.0.0.1:${MONGO_EXPRESS_PORT:-18081}:8081"
+    environment:
+      ME_CONFIG_BASICAUTH_ENABLED: "true"
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: "27017"
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - mongo-compose-network
+
+volumes:
+  # Os dados permanecem entre recriações dos contêineres.
+  mongo-data:
+
+networks:
+  mongo-compose-network:
+    driver: bridge
