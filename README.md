@@ -121,6 +121,20 @@ mongodb://root:Mongo@localhost:27018/?authSource=admin
 
 A porta externa é `27018`, enquanto o MongoDB continua usando a porta padrão `27017` dentro da rede Docker. Da mesma forma, o `mongo-express` é publicado na porta externa `18081`, mas utiliza `8081` dentro do contêiner. Somente as portas externas ocupam portas da máquina.
 
+A aplicação utiliza o banco `linguagens` e, por padrão, conecta-se ao mesmo ambiente local:
+
+```text
+mongodb://root:Mongo@localhost:27018/linguagens?authSource=admin
+```
+
+Para apontar a aplicação para outra instância sem alterar o projeto, defina `SPRING_DATA_MONGODB_URI`:
+
+```bash
+SPRING_DATA_MONGODB_URI='mongodb://usuario:senha@servidor:27017/banco?authSource=admin' ./mvnw spring-boot:run
+```
+
+Não registre credenciais reais no repositório.
+
 Para abrir o shell do MongoDB pelo próprio contêiner:
 
 ```bash
