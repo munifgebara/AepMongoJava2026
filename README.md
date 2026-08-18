@@ -114,17 +114,17 @@ Os dados ficam no volume nomeado `mongo-data`. O comando abaixo também remove e
 docker compose down --volumes
 ```
 
-### Compatibilidade do MongoDB 8 no Linux
+### Versão do MongoDB e compatibilidade no Linux
 
-MongoDB 8.x não inicia em hosts Linux com kernel entre 6.19 e 7.0.13 devido a uma incompatibilidade conhecida com TCMalloc. Atualizar para kernel 7.0.14 ou posterior permite manter a versão padrão do Compose.
+O projeto usa MongoDB 7.0 por padrão. A escolha mantém o ambiente didático compatível com hosts nos quais a imagem `mongo:8.0` recusa iniciar e informa uma incompatibilidade conhecida com kernels Linux 6.19 ou mais novos.
 
-Como alternativa temporária para desenvolvimento nesse intervalo de versões, substitua somente a variável ao iniciar os serviços:
+Em uma máquina compatível, outra versão pode ser experimentada sem editar o Compose:
 
 ```bash
-MONGO_VERSION=7.0 docker compose up -d
+MONGO_VERSION=8.0 docker compose up -d
 ```
 
-O `compose.yaml` permanece inalterado.
+A variável exportada apenas substitui o valor padrão para essa execução. Para a aula, o comando recomendado continua sendo simplesmente `docker compose up -d`.
 
 ## Como executar a aplicação
 

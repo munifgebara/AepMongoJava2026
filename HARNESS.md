@@ -93,7 +93,7 @@ A página inicial fica em `http://localhost:8080/`, o cliente CRUD em `http://lo
 
 Os testes Testcontainers precisam do daemon Docker disponível. Eles criam seu próprio MongoDB e não dependem do `compose.yaml` nem dos dados locais.
 
-O contêiner de integração usa `mongo:7.0`. MongoDB 8.x não inicia em hosts com kernel Linux entre 6.19 e 7.0.13 por uma incompatibilidade conhecida com TCMalloc; o Compose de desenvolvimento permanece inalterado e volta a funcionar nesse host após atualização para kernel 7.0.14 ou posterior.
+O contêiner de integração e o Compose de desenvolvimento usam `mongo:7.0`. A versão foi escolhida porque a imagem `mongo:8.0` recusa iniciar em alguns hosts com kernel Linux 6.19 ou mais novo. A versão do Compose pode ser substituída pontualmente, por exemplo com `MONGO_VERSION=8.0 docker compose up -d`, em uma máquina compatível.
 
 ## Definition of Done
 

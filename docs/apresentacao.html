@@ -890,7 +890,7 @@
                     <p class="code-title">compose.yaml · trecho resumido</p>
                     <pre><code>services:
   mongo:
-    image: mongo:${MONGO_VERSION:-8.0}
+    image: mongo:${MONGO_VERSION:-7.0}
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
@@ -927,7 +927,7 @@
                     <pre><code>MONGO_ROOT_USERNAME=root
 MONGO_ROOT_PASSWORD=Mongo
 MONGO_PORT=27018
-MONGO_VERSION=8.0
+MONGO_VERSION=7.0
 
 MONGO_EXPRESS_USERNAME=cesumar
 MONGO_EXPRESS_PASSWORD=cesumar
@@ -1624,9 +1624,10 @@ springdoc:
             <div class="grid-2">
                 <div class="card">
                     <h3>MongoDB 8 × kernel Linux</h3>
-                    <p>O host usado no desenvolvimento possui kernel <code>7.0.0-28</code>, incompatível com MongoDB 8.x por uma questão conhecida do TCMalloc.</p>
-                    <pre><code>MONGO_VERSION=7.0 docker compose up -d</code></pre>
-                    <p class="muted">O Compose permaneceu configurado para 8.0; a variável permite o contorno local.</p>
+                    <p>A imagem <code>mongo:8.0</code> recusou iniciar no host com kernel <code>7.0.0-28</code> e informou uma incompatibilidade conhecida com kernels 6.19+.</p>
+                    <pre><code>docker compose up -d
+<span class="com"># padrão do projeto: MongoDB 7.0</span></code></pre>
+                    <p class="muted">A versão 7.0 virou o padrão compatível; <code>MONGO_VERSION</code> ainda permite substituição.</p>
                 </div>
                 <div class="card">
                     <h3>Mongo Express</h3>
@@ -1656,7 +1657,7 @@ springdoc:
             <h2>Roteiro de demonstração ao vivo</h2>
             <div class="grid-2">
                 <pre><code><span class="com"># 1. Infraestrutura</span>
-MONGO_VERSION=7.0 docker compose up -d
+docker compose up -d
 
 <span class="com"># 2. Aplicação + dados de exemplo</span>
 SPRING_PROFILES_ACTIVE=dev ./mvnw spring-boot:run

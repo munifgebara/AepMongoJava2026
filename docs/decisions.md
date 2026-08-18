@@ -99,3 +99,13 @@
 **Alternativas consideradas:** React, Vue, Angular, bibliotecas de requisição e templates renderizados no servidor.
 
 **Consequências:** não há dependência ou processo de build de frontend. A interface é propositalmente pequena e consome somente os contratos REST públicos.
+
+## ADR-011 — MongoDB 7.0 no ambiente de desenvolvimento
+
+**Decisão:** utilizar `mongo:7.0` como versão padrão no Compose de desenvolvimento, mantendo a substituição pela variável `MONGO_VERSION`.
+
+**Motivação:** a imagem `mongo:8.0` recusa iniciar em alguns hosts com kernel Linux 6.19 ou mais novo. A versão 7.0 também é a utilizada pelos testes de integração e torna o exemplo mais reproduzível entre as máquinas da turma.
+
+**Alternativas consideradas:** exigir atualização do kernel, manter 8.0 e documentar um comando alternativo ou usar uma tag sem versão fixa.
+
+**Consequências:** `docker compose up -d` funciona no ambiente validado sem parâmetros adicionais. Máquinas compatíveis ainda podem selecionar outra versão com `MONGO_VERSION`, e a tag `latest` continua evitada.

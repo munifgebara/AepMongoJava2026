@@ -1,8 +1,9 @@
 # Ambiente local de desenvolvimento. Não use estas credenciais em produção.
 services:
   mongo:
-    # MongoDB 8.0 é uma versão estável e evita as mudanças imprevisíveis da tag "latest".
-    image: mongo:${MONGO_VERSION:-8.0}
+    # MongoDB 7.0 evita a incompatibilidade observada entre MongoDB 8.0 e kernels Linux 6.19+.
+    # A versão continua substituível pela variável MONGO_VERSION e não usa a tag imprevisível "latest".
+    image: mongo:${MONGO_VERSION:-7.0}
     restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
